@@ -191,6 +191,6 @@ void QWMainWind::on_txtEdit_selectionChanged()
 
 void QWMainWind::on_actAbout_triggered()
 {
-    QMessageBox::information(this, "About", "姓名: 林钦潮\n学号: 2022414040226");
+    QMessageBox::information(this, "About", "姓名: xxx\n学号: 202xxxxxxxxxx");
 }
 
