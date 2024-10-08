@@ -80,4 +80,9 @@ build/
 
 # 忽略 Qt 自动生成的文件
 ui_*.h
+<<<<<<< HEAD
 *.pro.user
+
+=======
+*.pro.user
+>>>>>>> e66d84b0d255b08458b09eca9b88afd42342c1f1
