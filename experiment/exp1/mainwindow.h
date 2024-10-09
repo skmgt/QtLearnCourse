@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-
+#include <QStack>
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -16,6 +16,14 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+    QString operand;
+    QString opcode;
+
+    QStack<QString> operands;
+    QStack<QString> opcodes;
+
+    QString calculation(bool *ok=NULL);
 private slots:
 
     void btnNumClicked();
@@ -23,6 +31,15 @@ private slots:
     void on_btnPoint_clicked();
 
     void on_btnBack_clicked();
+
+    void on_btnClearAll_clicked();
+
+    void btnBinaryOperatorClicked();
+    void btnUnaryOperatorClicked();
+
+    void on_btnEqual_clicked();
+
+
 
 private:
     Ui::MainWindow *ui;
