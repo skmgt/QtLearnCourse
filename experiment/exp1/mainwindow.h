@@ -3,6 +3,10 @@
 
 #include <QMainWindow>
 #include <QStack>
+#include <QKeyEvent>
+#include <QMap>
+#include <QPushButton>
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -22,6 +26,7 @@ public:
 
     QStack<QString> operands;
     QStack<QString> opcodes;
+    QMap<int,QPushButton*> btnNums;
 
     QString calculation(bool *ok=NULL);
 private slots:
@@ -39,7 +44,9 @@ private slots:
 
     void on_btnEqual_clicked();
 
+    void on_btnOpp_clicked();
 
+    virtual void keyPressEvent(QKeyEvent *event);
 
 private:
     Ui::MainWindow *ui;
