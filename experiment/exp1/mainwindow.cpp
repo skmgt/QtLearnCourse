@@ -52,8 +52,9 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-QString MainWindow::calculation(bool *ok)
+QString MainWindow::calculation()
 {
+
     double ans=0;
     if(operands.size()==2&&opcodes.size()>0){
         //去操作数
@@ -65,6 +66,7 @@ QString MainWindow::calculation(bool *ok)
         //操作符
         QString op=opcodes.front();
         opcodes.pop_front();
+        qDebug()<<operand1<<op<<operand2<<'\n';
         if(op=="+"){
             ans=operand1+operand2;
         }else if(op=="-"){
@@ -74,11 +76,10 @@ QString MainWindow::calculation(bool *ok)
         }else if(op=="÷"){
             ans=operand1/operand2;
         }
-
         operands.push_back(QString::number(ans));
     }
-
     return QString::number(ans);
+
 }
 
 void MainWindow::btnNumClicked()
@@ -92,6 +93,7 @@ void MainWindow::btnNumClicked()
         else
             operand="";
     }
+
     operand+=digit;
 
     ui->display->setText(operand);
@@ -120,6 +122,8 @@ void MainWindow::on_btnBack_clicked()
 void MainWindow::on_btnClearAll_clicked()
 {
     operand.clear();
+    operands.clear();
+    opcodes.clear();
     ui->display->setText(operand);
 }
 
@@ -128,13 +132,23 @@ void MainWindow::btnBinaryOperatorClicked()
     QString opcode=qobject_cast<QPushButton*>(sender())->text();
 
     if(operand!=""){
+        QString temp=operand;
         operands.push_back(operand);
-        operand.clear();
-        opcodes.push_back(opcode);
-        QString result=calculation();
+        ui->display->setText(temp);
+        operand="";
+        // operand.clear();
+        // opcodes.push_back(opcode);
 
-        ui->display->setText(result);
+        if(operands.size()==2&&opcodes.size()>0){
+            QString result=calculation();
+            ui->display->setText(result);
+        }
     }
+
+    //在 不符合计算情况前 按其他运算符会更改
+    if(opcodes.size()!=0)
+        opcodes.pop_front();
+    opcodes.push_back(opcode);
 
 
 }
@@ -154,6 +168,7 @@ void MainWindow::btnUnaryOperatorClicked()
         else if(op=="√")
             ans=sqrt(ans);
 
+        operand=QString::number(ans);
         ui->display->setText(QString::number(ans));
     }
 }
@@ -165,10 +180,10 @@ void MainWindow::on_btnEqual_clicked()
         operands.push_back(operand);
         operand.clear();
     }
-
-    QString result=calculation();
-
-    ui->display->setText(result);
+    if(operands.size()==2&&opcodes.size()>0){
+        QString result=calculation();
+        ui->display->setText(result);
+    }
 }
 
 
@@ -192,5 +207,12 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     // if(event->key()==Qt::Key_0)
     //     ui->btnNum0->animateClick();
 
+}
+
+
+void MainWindow::on_btnClear_clicked()
+{
+    operand="";
+    ui->display->setText(operand);
 }
 

@@ -28,7 +28,7 @@ public:
     QStack<QString> opcodes;
     QMap<int,QPushButton*> btnNums;
 
-    QString calculation(bool *ok=NULL);
+    QString calculation();
 private slots:
 
     void btnNumClicked();
@@ -47,6 +47,8 @@ private slots:
     void on_btnOpp_clicked();
 
     virtual void keyPressEvent(QKeyEvent *event);
+
+    void on_btnClear_clicked();
 
 private:
     Ui::MainWindow *ui;
