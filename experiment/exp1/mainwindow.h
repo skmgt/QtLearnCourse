@@ -27,6 +27,9 @@ public:
     QStack<QString> operands;
     QStack<QString> opcodes;
     QMap<int,QPushButton*> btnNums;
+    QMap<int,QPushButton*> btnCodes;
+    QMap<int,QPushButton*> btnSingleCodes;
+    QString result;
 
     QString calculation();
 private slots:

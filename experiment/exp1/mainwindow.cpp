@@ -21,8 +21,28 @@ MainWindow::MainWindow(QWidget *parent)
         {Qt::Key_9,ui->btnNum9}
     };
 
+    btnCodes ={
+        {Qt::Key_Plus,ui->btnPlus},
+        {Qt::Key_Minus,ui->btnSub},
+        {Qt::Key_Asterisk,ui->btnMul},
+        {Qt::Key_Slash,ui->btnDiv}
+    };
+
+    btnSingleCodes ={
+        {1,ui->btnMod},
+        {2,ui->btnSqrt},
+        {3,ui->btnSquare},
+        {4,ui->btnFraction}
+    };
+
+
     foreach(auto btn,btnNums)
         connect(btn,SIGNAL(clicked()),this,SLOT(btnNumClicked()));
+    foreach(auto btn,btnCodes)
+        connect(btn,SIGNAL(clicked()),this,SLOT(btnBinaryOperatorClicked()));
+
+    foreach(auto btn,btnSingleCodes)
+        connect(btn,SIGNAL(clicked()),this,SLOT(btnUnaryOperatorClicked()));
 
 
     // connect(ui->btnNum0,SIGNAL(clicked()),this,SLOT(btnNumClicked()));
@@ -36,15 +56,15 @@ MainWindow::MainWindow(QWidget *parent)
     // connect(ui->btnNum8,SIGNAL(clicked()),this,SLOT(btnNumClicked()));
     // connect(ui->btnNum9,SIGNAL(clicked()),this,SLOT(btnNumClicked()));
 
-    connect(ui->btnMul,SIGNAL(clicked()),this,SLOT(btnBinaryOperatorClicked()));
-    connect(ui->btnSub,SIGNAL(clicked()),this,SLOT(btnBinaryOperatorClicked()));
-    connect(ui->btnDiv,SIGNAL(clicked()),this,SLOT(btnBinaryOperatorClicked()));
-    connect(ui->btnPlus,SIGNAL(clicked()),this,SLOT(btnBinaryOperatorClicked()));
+    // connect(ui->btnMul,SIGNAL(clicked()),this,SLOT(btnBinaryOperatorClicked()));
+    // connect(ui->btnSub,SIGNAL(clicked()),this,SLOT(btnBinaryOperatorClicked()));
+    // connect(ui->btnDiv,SIGNAL(clicked()),this,SLOT(btnBinaryOperatorClicked()));
+    // connect(ui->btnPlus,SIGNAL(clicked()),this,SLOT(btnBinaryOperatorClicked()));
 
-    connect(ui->btnMod,SIGNAL(clicked()),this,SLOT(btnUnaryOperatorClicked()));
-    connect(ui->btnFraction,SIGNAL(clicked()),this,SLOT(btnUnaryOperatorClicked()));
-    connect(ui->btnSquare,SIGNAL(clicked()),this,SLOT(btnUnaryOperatorClicked()));
-    connect(ui->btnSqrt,SIGNAL(clicked()),this,SLOT(btnUnaryOperatorClicked()));
+    // connect(ui->btnMod,SIGNAL(clicked()),this,SLOT(btnUnaryOperatorClicked()));
+    // connect(ui->btnFraction,SIGNAL(clicked()),this,SLOT(btnUnaryOperatorClicked()));
+    // connect(ui->btnSquare,SIGNAL(clicked()),this,SLOT(btnUnaryOperatorClicked()));
+    // connect(ui->btnSqrt,SIGNAL(clicked()),this,SLOT(btnUnaryOperatorClicked()));
 }
 
 MainWindow::~MainWindow()
@@ -66,7 +86,7 @@ QString MainWindow::calculation()
         //操作符
         QString op=opcodes.front();
         opcodes.pop_front();
-        qDebug()<<operand1<<op<<operand2<<'\n';
+        // qDebug()<<operand1<<op<<operand2<<'\n';
         if(op=="+"){
             ans=operand1+operand2;
         }else if(op=="-"){
@@ -77,7 +97,9 @@ QString MainWindow::calculation()
             ans=operand1/operand2;
         }
         operands.push_back(QString::number(ans));
-    }
+        // operand=QString::number(ans);
+    }else return operands.front();
+
     return QString::number(ans);
 
 }
@@ -94,6 +116,13 @@ void MainWindow::btnNumClicked()
             operand="";
     }
 
+    if(result!=""&&opcodes.size()==0){
+        operand.clear();
+        result.clear();
+        operands.clear();
+        opcodes.clear();
+    }
+
     operand+=digit;
 
     ui->display->setText(operand);
@@ -104,6 +133,7 @@ void MainWindow::btnNumClicked()
 void MainWindow::on_btnPoint_clicked()
 {
 
+    if(operand=="")operand ="0"+ qobject_cast<QPushButton*>(sender())->text();
     if(!operand.contains(".")){
         operand += qobject_cast<QPushButton*>(sender())->text();
     }
@@ -131,30 +161,34 @@ void MainWindow::btnBinaryOperatorClicked()
 {
     QString opcode=qobject_cast<QPushButton*>(sender())->text();
 
+    // qDebug()<<opcodes<<operands<<"1111\n";
     if(operand!=""){
         QString temp=operand;
         operands.push_back(operand);
         ui->display->setText(temp);
-        operand="";
-        // operand.clear();
-        // opcodes.push_back(opcode);
+        operand.clear();
 
         if(operands.size()==2&&opcodes.size()>0){
-            QString result=calculation();
+            result=calculation();
             ui->display->setText(result);
         }
     }
+
 
     //在 不符合计算情况前 按其他运算符会更改
     if(opcodes.size()!=0)
         opcodes.pop_front();
     opcodes.push_back(opcode);
 
-
+    //ui->statusbar->showMessage(QString("operands is %1,opcodes is %2").arg(operands.size()).arg(opcodes.size()));
+    // qDebug()<<opcodes<<operands<<"2222\n";
 }
 
 void MainWindow::btnUnaryOperatorClicked()
 {
+    if(operand==""&&operands.size()>0){
+        operand=operands.front();
+    }
     if(operand!=""){
         double ans=operand.toDouble();
         operand="";
@@ -167,7 +201,6 @@ void MainWindow::btnUnaryOperatorClicked()
             ans*=ans;
         else if(op=="√")
             ans=sqrt(ans);
-
         operand=QString::number(ans);
         ui->display->setText(QString::number(ans));
     }
@@ -180,19 +213,26 @@ void MainWindow::on_btnEqual_clicked()
         operands.push_back(operand);
         operand.clear();
     }
-    if(operands.size()==2&&opcodes.size()>0){
-        QString result=calculation();
-        ui->display->setText(result);
-    }
+    //ui->statusbar->showMessage(QString("operands is %1,opcodes is %2").arg(operands.size()).arg(opcodes.size()));
+    if(operands.size()==1&&opcodes.size()>0)
+        operands.push_back(operands.front());
+
+    result=calculation();
+    ui->display->setText(result);
+    qDebug()<<result;
+    operands.clear();
+    operand=result;
+
+
 }
 
 
 void MainWindow::on_btnOpp_clicked()
 {
-    if(!operand.contains("-"))
-        operand="-"+operand;
+    if(operand!="")
+        operand=QString::number(-operand.toDouble());
     else
-        operand=operand.mid(1);
+        operand=QString::number(-operands.front().toDouble());
     ui->display->setText(operand);
 
 }
@@ -204,8 +244,30 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
             btnNums[btnKey]->animateClick();
         }
     }
-    // if(event->key()==Qt::Key_0)
-    //     ui->btnNum0->animateClick();
+
+    foreach (auto btnKey, btnCodes.keys()) {
+        if(event->key()==btnKey){
+            btnCodes[btnKey]->animateClick();
+        }
+    }
+
+    if(event->key()==Qt::Key_Period)
+        ui->btnPoint->animateClick();
+    else if(event->key()==Qt::Key_Backspace)
+        ui->btnBack->animateClick();
+    else if(event->key()==Qt::Key_Percent)
+        ui->btnMod->animateClick();
+    // else if(event->key()==Qt::Key_Asterisk)
+    //     ui->btnMul->animateClick();
+    // else if(event->key()==Qt::Key_Plus)
+    //     ui->btnPlus->animateClick();
+    // else if(event->key()==Qt::Key_Minus)
+    //     ui->btnSub->animateClick();
+    // else if(event->key()==Qt::Key_Slash)
+    //     ui->btnDiv->animateClick();
+    else if(event->key()==Qt::Key_Equal)
+        ui->btnEqual->animateClick();
+
 
 }
 
