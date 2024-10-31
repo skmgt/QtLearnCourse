@@ -62,6 +62,14 @@ private slots:
 
     void on_actionFont_triggered();
 
+    void on_actionToolBar_triggered();
+
+    void on_actionStatusBar_triggered();
+
+    void on_actionSelectAll_triggered();
+
+    void on_actionExit_triggered();
+
 private:
     Ui::MainWindow *ui;
 

@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>526</width>
+    <width>600</width>
     <height>401</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>600</width>
+    <height>0</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
@@ -40,7 +46,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>526</width>
+     <width>600</width>
      <height>18</height>
     </rect>
    </property>
@@ -127,8 +133,8 @@
    <addaction name="actionReplace"/>
    <addaction name="separator"/>
    <addaction name="actionFont"/>
-   <addaction name="actionLineWrap"/>
    <addaction name="actionLineNumber"/>
+   <addaction name="actionLineWrap"/>
    <addaction name="separator"/>
    <addaction name="actionToolBar"/>
    <addaction name="actionStatusBar"/>
