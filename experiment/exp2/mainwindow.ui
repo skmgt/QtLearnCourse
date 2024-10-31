@@ -19,6 +19,10 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="res.qrc">
+    <normaloff>:/img/logo.png</normaloff>:/img/logo.png</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <property name="spacing">
@@ -37,7 +41,7 @@
      <number>1</number>
     </property>
     <item>
-     <widget class="QPlainTextEdit" name="textEdit"/>
+     <widget class="CodeEditor" name="textEdit"/>
     </item>
    </layout>
   </widget>
@@ -441,6 +445,9 @@
    </property>
   </action>
   <action name="actionLineNumber">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="res.qrc">
      <normaloff>:/img/lineNumber.png</normaloff>:/img/lineNumber.png</iconset>
@@ -504,6 +511,13 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CodeEditor</class>
+   <extends>QPlainTextEdit</extends>
+   <header location="global">codeeditor.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="res.qrc"/>
  </resources>
