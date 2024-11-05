@@ -16,7 +16,8 @@ MainWindow::MainWindow(QWidget *parent)
     textChanged = false;
     on_actionNew_triggered();
 
-
+    autoSaveTimer=new QTimer(this);
+    connect(autoSaveTimer, &QTimer::timeout, this, &MainWindow::on_actionSave_triggered);
     statusLabel.setMidLineWidth(150);
     statusLabel.setText("length: " + QString::number(0) + "     lines: " + QString::number(1));
     ui->statusbar->addPermanentWidget(&statusLabel);
@@ -99,7 +100,7 @@ void MainWindow::on_actionOpen_triggered()
     QFile file(filename);
 
     if(!file.open(QFile::ReadOnly | QFile::Text)){
-        QMessageBox::warning(this,"..","打开文件失败");
+        // QMessageBox::warning(this,"..","打开文件失败");
         return;
     }
     filePath = filename;
@@ -151,7 +152,7 @@ void MainWindow::on_actionSaveAs_triggered()
     QString filename = QFileDialog::getSaveFileName(this,"保存文件",".",tr("Text files (*.txt) "));
     QFile file(filename);
     if(!file.open(QFile::WriteOnly | QFile::Text)){
-        QMessageBox::warning(this,"..","打开保存文件失败");
+        // QMessageBox::warning(this,"..","打开保存文件失败");
         return;
     }
     filePath = filename;
@@ -359,5 +360,18 @@ void MainWindow::on_textEdit_cursorPositionChanged()
 void MainWindow::on_actionLineNumber_triggered(bool checked)
 {
     ui->textEdit->hideLineNumberArea(checked);
+}
+
+
+
+
+
+void MainWindow::on_actionAutoSave_triggered(bool checked)
+{
+    if (checked) {
+        autoSaveTimer->start(5000);  // 5000 毫秒 = 5秒
+    } else {
+        autoSaveTimer->stop();
+    }
 }
 

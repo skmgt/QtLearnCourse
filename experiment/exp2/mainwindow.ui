@@ -126,6 +126,7 @@
    <addaction name="actionOpen"/>
    <addaction name="actionSave"/>
    <addaction name="actionSaveAs"/>
+   <addaction name="actionAutoSave"/>
    <addaction name="separator"/>
    <addaction name="actionUndo"/>
    <addaction name="actionRedo"/>
@@ -505,6 +506,24 @@
    </property>
    <property name="toolTip">
     <string>设置字体背景色</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionAutoSave">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/img/autoSave.png</normaloff>:/img/autoSave.png</iconset>
+   </property>
+   <property name="text">
+    <string>自动保存</string>
+   </property>
+   <property name="toolTip">
+    <string>自动保存</string>
    </property>
    <property name="menuRole">
     <enum>QAction::MenuRole::NoRole</enum>

@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QLabel>
-
+#include <QTimer>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -16,6 +16,9 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+
+
+
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
@@ -74,12 +77,16 @@ private slots:
 
     void on_actionLineNumber_triggered(bool checked);
 
+
+
+    void on_actionAutoSave_triggered(bool checked);
+
 private:
     Ui::MainWindow *ui;
 
     QLabel statusCursorLabel;
     QLabel statusLabel;
-
+    QTimer* autoSaveTimer;
     QString filePath;
     bool textChanged;
 
