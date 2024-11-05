@@ -22,5 +22,6 @@
         <file>img/undo.png</file>
         <file>img/new.png</file>
         <file>img/logo.png</file>
+        <file>img/autoSave.png</file>
     </qresource>
 </RCC>

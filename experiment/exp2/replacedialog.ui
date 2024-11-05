@@ -19,6 +19,11 @@
   <property name="windowTitle">
    <string>替换</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QLineEdit{
+	padding-left: -3px; padding-top: 5px; 
+}</string>
+  </property>
   <layout class="QHBoxLayout" name="horizontalLayout_5">
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -103,6 +108,13 @@
        </item>
        <item>
         <widget class="QGroupBox" name="groupBox">
+         <property name="styleSheet">
+          <string notr="true">QGroupBox { 
+     border: 1px solid lightgray; 
+     border-radius: 5px; 
+   	padding: 5px; 
+}</string>
+         </property>
          <property name="title">
           <string>方向</string>
          </property>
