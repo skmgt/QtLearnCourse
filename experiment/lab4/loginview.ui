@@ -171,6 +171,13 @@
      </property>
     </spacer>
    </item>
+   <item>
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>Powned by xxx 2022</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources/>
