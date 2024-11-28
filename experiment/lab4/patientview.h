@@ -24,7 +24,7 @@ private slots:
     void on_btnEdit_clicked();
 
 signals:
-    void goPatientEditView();
+    void goPatientEditView(int index);
 
 
 private:

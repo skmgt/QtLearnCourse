@@ -1,5 +1,5 @@
 #include "idatabase.h"
-
+#include <QUuid>
 void IDatabase::initDatabase()
 {
     database = QSqlDatabase::addDatabase("QSQLITE"); //数据库驱动
@@ -24,6 +24,20 @@ bool IDatabase::initPatientModel()
         return false;
     thePatientSelection = new QItemSelectionModel(patientTabModel);
     return true;
+}
+
+int IDatabase::addNewPatient()
+{
+    patientTabModel->insertRow(patientTabModel->rowCount(),QModelIndex());
+    QModelIndex curIndex = patientTabModel->index(patientTabModel->rowCount()-1,1);
+
+    int curRecNo = curIndex.row();
+    QSqlRecord curRec = patientTabModel->record(curRecNo);
+    curRec.setValue("CREATEDTIMESTAMP",QDateTime::currentDateTime().toString("yyyy-MM-dd"));
+    curRec.setValue("ID",QUuid::createUuid().toString(QUuid::WithoutBraces));
+    patientTabModel->setRecord(curRecNo,curRec);
+    return curIndex.row();
+
 }
 
 bool IDatabase::searchPatient(QString filter)
