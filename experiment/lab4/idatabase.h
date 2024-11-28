@@ -16,6 +16,8 @@ public:
         return instance;
     }
 
+    QString userLogin(QString username,QString password);
+
 private:
     explicit IDatabase(QObject *parent = nullptr);
     IDatabase(IDatabase const&)               = delete;
