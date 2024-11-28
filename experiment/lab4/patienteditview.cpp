@@ -6,6 +6,8 @@ PatientEditView::PatientEditView(QWidget *parent)
     , ui(new Ui::PatientEditView)
 {
     ui->setupUi(this);
+
+
 }
 
 PatientEditView::~PatientEditView()

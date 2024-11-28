@@ -13,6 +13,43 @@ void IDatabase::initDatabase()
         qDebug()<<"open database is ok";
 }
 
+bool IDatabase::initPatientModel()
+{
+    patientTabModel = new QSqlTableModel(this,database);
+    patientTabModel->setTable("patient");
+    patientTabModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    patientTabModel->setSort(patientTabModel->fieldIndex("name"),Qt::AscendingOrder);
+
+    if(!(patientTabModel->select()))
+        return false;
+    thePatientSelection = new QItemSelectionModel(patientTabModel);
+    return true;
+}
+
+bool IDatabase::searchPatient(QString filter)
+{
+    patientTabModel->setFilter(filter);
+    return patientTabModel->select();
+}
+
+bool IDatabase::deleteCurrentPatient()
+{
+    QModelIndex curIndex = thePatientSelection->currentIndex();
+    patientTabModel->removeRow(curIndex.row());
+    patientTabModel->submitAll();
+    patientTabModel->select();
+}
+
+bool IDatabase::submitPatientEdit()
+{
+    return patientTabModel->submitAll();
+}
+
+void IDatabase::revertPatientEdit()
+{
+    patientTabModel->revertAll();
+}
+
 QString IDatabase::userLogin(QString username, QString password)
 {
     QSqlQuery query;
