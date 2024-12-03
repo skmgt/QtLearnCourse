@@ -15,14 +15,15 @@ PatientEditView::PatientEditView(QWidget *parent,int row)
     dataMapper->addMapping(ui->dbEditID,tabModel->fieldIndex("ID"));
     dataMapper->addMapping(ui->dbEDitName,tabModel->fieldIndex("NAME"));
     dataMapper->addMapping(ui->dbEditIDCard,tabModel->fieldIndex("ID_CARD"));
-    dataMapper->addMapping(ui->dbHigh,tabModel->fieldIndex("HEIGHT"));
-    dataMapper->addMapping(ui->dbWeight,tabModel->fieldIndex("WEIGHT"));
+    dataMapper->addMapping(ui->dbHigh,tabModel->fieldIndex("HEIGET"));
+    dataMapper->addMapping(ui->dbWeight,tabModel->fieldIndex("WEIGET"));
     dataMapper->addMapping(ui->dbPhone,tabModel->fieldIndex("MOBILEPHONE"));
     dataMapper->addMapping(ui->dbCreateTime,tabModel->fieldIndex("CREATEDTIMESTAMP"));
     dataMapper->addMapping(ui->dbSex,tabModel->fieldIndex("SEX"));
     dataMapper->addMapping(ui->dbDate,tabModel->fieldIndex("DOB"));
-
+    qDebug()<<row;
     dataMapper->setCurrentIndex(row);
+
 }
 
 PatientEditView::~PatientEditView()
@@ -32,6 +33,7 @@ PatientEditView::~PatientEditView()
 
 void PatientEditView::on_pushButton_clicked()
 {
+    dataMapper->submit();
     IDatabase::getInstance().submitPatientEdit();
     emit goPreviousView();
 }
