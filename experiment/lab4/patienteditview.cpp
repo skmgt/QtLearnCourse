@@ -33,7 +33,7 @@ PatientEditView::~PatientEditView()
 
 void PatientEditView::on_pushButton_clicked()
 {
-    dataMapper->submit();
+    dataMapper->submit();  //把控件信息提交，否则自动生成没有焦点，（点击），不会自动提交，导致插入数据库失败
     IDatabase::getInstance().submitPatientEdit();
     emit goPreviousView();
 }

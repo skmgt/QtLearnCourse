@@ -1,0 +1,711 @@
+{
+  "paper": {
+    "name": "A4",
+    "leftMargin": 0.5,
+    "rightMargin": 0.5,
+    "topMargin": 0.5,
+    "bottomMargin": 0.5,
+    "isPortriat": true
+  },
+  "modelVersion": 2.01,
+  "defaultSchema": "main",
+  "server": {
+    "objectType": "Server_SQLITE",
+    "name": "Default",
+    "uuid": "",
+    "serverVersion": 3000000,
+    "edition": "Default",
+    "schemas": [
+      {
+        "objectType": "Schema_SQLITE",
+        "name": "main",
+        "tables": [
+          {
+            "objectType": "Table_SQLITE",
+            "name": "Department",
+            "autoIncrement": -1,
+            "isWithoutRowID": false,
+            "oldName": "Department",
+            "rootPage": 2,
+            "sql": "CREATE TABLE \"Department\" (\r\n  \"ID\" text NOT NULL,\r\n  \"NAME\" text,\r\n  PRIMARY KEY (\"ID\")\r\n)",
+            "hasIndexes": true,
+            "hasTriggers": false,
+            "hasAutoIncrementInDB": false,
+            "fields": [
+              {
+                "objectType": "TableField_SQLITE",
+                "name": "ID",
+                "type": "text",
+                "size": -2147483648,
+                "scale": -2147483648,
+                "isNullable": "No",
+                "defaultValue": "",
+                "defaultValueType": "Others",
+                "collate": "",
+                "notNullOnConflict": "None",
+                "isAutoIncrement": false,
+                "oldName": "ID"
+              },
+              {
+                "objectType": "TableField_SQLITE",
+                "name": "NAME",
+                "type": "text",
+                "size": -2147483648,
+                "scale": -2147483648,
+                "isNullable": "Yes",
+                "defaultValue": "",
+                "defaultValueType": "Others",
+                "collate": "",
+                "notNullOnConflict": "None",
+                "isAutoIncrement": false,
+                "oldName": "NAME"
+              }
+            ],
+            "indexes": [],
+            "primaryKey": {
+              "objectType": "PrimaryKey_SQLITE",
+              "name": "",
+              "fields": [
+                "ID"
+              ],
+              "onConflict": "None",
+              "oldName": ""
+            },
+            "foreignKeys": [],
+            "uniques": [],
+            "checks": [],
+            "triggers": []
+          },
+          {
+            "objectType": "Table_SQLITE",
+            "name": "Doctor",
+            "autoIncrement": -1,
+            "isWithoutRowID": false,
+            "oldName": "Doctor",
+            "rootPage": 4,
+            "sql": "CREATE TABLE \"Doctor\" (\r\n  \"ID\" text NOT NULL,\r\n  \"EMPLOYEENO\" text,\r\n  \"NAME\" text,\r\n  \"DEPARTMENT_ID\" text,\r\n  PRIMARY KEY (\"ID\"),\r\n  CONSTRAINT \"fk_Doctor_Department_1\" FOREIGN KEY (\"DEPARTMENT_ID\") REFERENCES \"Department\" (\"ID\")\r\n)",
+            "hasIndexes": true,
+            "hasTriggers": false,
+            "hasAutoIncrementInDB": false,
+            "fields": [
+              {
+                "objectType": "TableField_SQLITE",
+                "name": "ID",
+                "type": "text",
+                "size": -2147483648,
+                "scale": -2147483648,
+                "isNullable": "No",
+                "defaultValue": "",
+                "defaultValueType": "Others",
+                "collate": "",
+                "notNullOnConflict": "None",
+                "isAutoIncrement": false,
+                "oldName": "ID"
+              },
+              {
+                "objectType": "TableField_SQLITE",
+                "name": "EMPLOYEENO",
+                "type": "text",
+                "size": -2147483648,
+                "scale": -2147483648,
+                "isNullable": "Yes",
+                "defaultValue": "",
+                "defaultValueType": "Others",
+                "collate": "",
+                "notNullOnConflict": "None",
+                "isAutoIncrement": false,
+                "oldName": "EMPLOYEENO"
+              },
+              {
+                "objectType": "TableField_SQLITE",
+                "name": "NAME",
+                "type": "text",
+                "size": -2147483648,
+                "scale": -2147483648,
+                "isNullable": "Yes",
+                "defaultValue": "",
+                "defaultValueType": "Others",
+                "collate": "",
+                "notNullOnConflict": "None",
+                "isAutoIncrement": false,
+                "oldName": "NAME"
+              },
+              {
+                "objectType": "TableField_SQLITE",
+                "name": "DEPARTMENT_ID",
+                "type": "text",
+                "size": -2147483648,
+                "scale": -2147483648,
+                "isNullable": "Yes",
+                "defaultValue": "",
+                "defaultValueType": "Others",
+                "collate": "",
+                "notNullOnConflict": "None",
+                "isAutoIncrement": false,
+                "oldName": "DEPARTMENT_ID"
+              }
+            ],
+            "indexes": [],
+            "primaryKey": {
+              "objectType": "PrimaryKey_SQLITE",
+              "name": "",
+              "fields": [
+                "ID"
+              ],
+              "onConflict": "None",
+              "oldName": ""
+            },
+            "foreignKeys": [
+              {
+                "objectType": "ForeignKey_SQLITE",
+                "name": "fk_Doctor_Department_1",
+                "fields": [
+                  "DEPARTMENT_ID"
+                ],
+                "referencedSchema": "main",
+                "referencedTable": "Department",
+                "referencedFields": [
+                  "ID"
+                ],
+                "onDelete": "NO ACTION",
+                "onUpdate": "NO ACTION",
+                "isDeferred": false,
+                "sourceCardinality": "ZeroOrManyRelationship",
+                "targetCardinality": "ZeroOrOneRelationship",
+                "oldName": "fk_Doctor_Department_1"
+              }
+            ],
+            "uniques": [],
+            "checks": [],
+            "triggers": []
+          },
+          {
+            "objectType": "Table_SQLITE",
+            "name": "History",
+            "autoIncrement": -1,
+            "isWithoutRowID": false,
+            "oldName": "History",
+            "rootPage": 6,
+            "sql": "CREATE TABLE \"History\" (\r\n  \"ID\" text NOT NULL,\r\n  \"USER_ID\" text,\r\n  \"EVENT\" text,\r\n  \"TIMESTAMP\" text,\r\n  PRIMARY KEY (\"ID\"),\r\n  CONSTRAINT \"fk_History_User_1\" FOREIGN KEY (\"USER_ID\") REFERENCES \"User\" (\"ID\")\r\n)",
+            "hasIndexes": true,
+            "hasTriggers": false,
+            "hasAutoIncrementInDB": false,
+            "fields": [
+              {
+                "objectType": "TableField_SQLITE",
+                "name": "ID",
+                "type": "text",
+                "size": -2147483648,
+                "scale": -2147483648,
+                "isNullable": "No",
+                "defaultValue": "",
+                "defaultValueType": "Others",
+                "collate": "",
+                "notNullOnConflict": "None",
+                "isAutoIncrement": false,
+                "oldName": "ID"
+              },
+              {
+                "objectType": "TableField_SQLITE",
+                "name": "USER_ID",
+                "type": "text",
+                "size": -2147483648,
+                "scale": -2147483648,
+                "isNullable": "Yes",
+                "defaultValue": "",
+                "defaultValueType": "Others",
+                "collate": "",
+                "notNullOnConflict": "None",
+                "isAutoIncrement": false,
+                "oldName": "USER_ID"
+              },
+              {
+                "objectType": "TableField_SQLITE",
+                "name": "EVENT",
+                "type": "text",
+                "size": -2147483648,
+                "scale": -2147483648,
+                "isNullable": "Yes",
+                "defaultValue": "",
+                "defaultValueType": "Others",
+                "collate": "",
+                "notNullOnConflict": "None",
+                "isAutoIncrement": false,
+                "oldName": "EVENT"
+              },
+              {
+                "objectType": "TableField_SQLITE",
+                "name": "TIMESTAMP",
+                "type": "text",
+                "size": -2147483648,
+                "scale": -2147483648,
+                "isNullable": "Yes",
+                "defaultValue": "",
+                "defaultValueType": "Others",
+                "collate": "",
+                "notNullOnConflict": "None",
+                "isAutoIncrement": false,
+                "oldName": "TIMESTAMP"
+              }
+            ],
+            "indexes": [],
+            "primaryKey": {
+              "objectType": "PrimaryKey_SQLITE",
+              "name": "",
+              "fields": [
+                "ID"
+              ],
+              "onConflict": "None",
+              "oldName": ""
+            },
+            "foreignKeys": [
+              {
+                "objectType": "ForeignKey_SQLITE",
+                "name": "fk_History_User_1",
+                "fields": [
+                  "USER_ID"
+                ],
+                "referencedSchema": "main",
+                "referencedTable": "User",
+                "referencedFields": [
+                  "ID"
+                ],
+                "onDelete": "NO ACTION",
+                "onUpdate": "NO ACTION",
+                "isDeferred": false,
+                "sourceCardinality": "ZeroOrManyRelationship",
+                "targetCardinality": "ZeroOrOneRelationship",
+                "oldName": "fk_History_User_1"
+              }
+            ],
+            "uniques": [],
+            "checks": [],
+            "triggers": []
+          },
+          {
+            "objectType": "Table_SQLITE",
+            "name": "Patient",
+            "autoIncrement": -1,
+            "isWithoutRowID": false,
+            "oldName": "Patient",
+            "rootPage": 8,
+            "sql": "CREATE TABLE \"Patient\" (\r\n  \"ID\" text(32) NOT NULL,\r\n  \"ID_CARD\" text(20),\r\n  \"NAME\" text,\r\n  \"SEX\" integer,\r\n  \"DOB\" text,\r\n  \"HEIGET\" real,\r\n  \"WEIGET\" real,\r\n  \"MOBILEPHONE\" text,\r\n  \"AGE\" integer,\r\n  \"CREATEDTIMESTAMP\" text,\r\n  PRIMARY KEY (\"ID\")\r\n)",
+            "hasIndexes": true,
+            "hasTriggers": false,
+            "hasAutoIncrementInDB": false,
+            "fields": [
+              {
+                "objectType": "TableField_SQLITE",
+                "name": "ID",
+                "type": "text",
+                "size": 32,
+                "scale": -2147483648,
+                "isNullable": "No",
+                "defaultValue": "",
+                "defaultValueType": "Others",
+                "collate": "",
+                "notNullOnConflict": "None",
+                "isAutoIncrement": false,
+                "oldName": "ID"
+              },
+              {
+                "objectType": "TableField_SQLITE",
+                "name": "ID_CARD",
+                "type": "text",
+                "size": 20,
+                "scale": -2147483648,
+                "isNullable": "Yes",
+                "defaultValue": "",
+                "defaultValueType": "Others",
+                "collate": "",
+                "notNullOnConflict": "None",
+                "isAutoIncrement": false,
+                "oldName": "ID_CARD"
+              },
+              {
+                "objectType": "TableField_SQLITE",
+                "name": "NAME",
+                "type": "text",
+                "size": -2147483648,
+                "scale": -2147483648,
+                "isNullable": "Yes",
+                "defaultValue": "",
+                "defaultValueType": "Others",
+                "collate": "",
+                "notNullOnConflict": "None",
+                "isAutoIncrement": false,
+                "oldName": "NAME"
+              },
+              {
+                "objectType": "TableField_SQLITE",
+                "name": "SEX",
+                "type": "integer",
+                "size": -2147483648,
+                "scale": -2147483648,
+                "isNullable": "Yes",
+                "defaultValue": "",
+                "defaultValueType": "Others",
+                "collate": "",
+                "notNullOnConflict": "None",
+                "isAutoIncrement": false,
+                "oldName": "SEX"
+              },
+              {
+                "objectType": "TableField_SQLITE",
+                "name": "DOB",
+                "type": "text",
+                "size": -2147483648,
+                "scale": -2147483648,
+                "isNullable": "Yes",
+                "defaultValue": "",
+                "defaultValueType": "Others",
+                "collate": "",
+                "notNullOnConflict": "None",
+                "isAutoIncrement": false,
+                "oldName": "DOB"
+              },
+              {
+                "objectType": "TableField_SQLITE",
+                "name": "HEIGET",
+                "type": "real",
+                "size": -2147483648,
+                "scale": -2147483648,
+                "isNullable": "Yes",
+                "defaultValue": "",
+                "defaultValueType": "Others",
+                "collate": "",
+                "notNullOnConflict": "None",
+                "isAutoIncrement": false,
+                "oldName": "HEIGET"
+              },
+              {
+                "objectType": "TableField_SQLITE",
+                "name": "WEIGET",
+                "type": "real",
+                "size": -2147483648,
+                "scale": -2147483648,
+                "isNullable": "Yes",
+                "defaultValue": "",
+                "defaultValueType": "Others",
+                "collate": "",
+                "notNullOnConflict": "None",
+                "isAutoIncrement": false,
+                "oldName": "WEIGET"
+              },
+              {
+                "objectType": "TableField_SQLITE",
+                "name": "MOBILEPHONE",
+                "type": "text",
+                "size": -2147483648,
+                "scale": -2147483648,
+                "isNullable": "Yes",
+                "defaultValue": "",
+                "defaultValueType": "Others",
+                "collate": "",
+                "notNullOnConflict": "None",
+                "isAutoIncrement": false,
+                "oldName": "MOBILEPHONE"
+              },
+              {
+                "objectType": "TableField_SQLITE",
+                "name": "AGE",
+                "type": "integer",
+                "size": -2147483648,
+                "scale": -2147483648,
+                "isNullable": "Yes",
+                "defaultValue": "",
+                "defaultValueType": "Others",
+                "collate": "",
+                "notNullOnConflict": "None",
+                "isAutoIncrement": false,
+                "oldName": "AGE"
+              },
+              {
+                "objectType": "TableField_SQLITE",
+                "name": "CREATEDTIMESTAMP",
+                "type": "text",
+                "size": -2147483648,
+                "scale": -2147483648,
+                "isNullable": "Yes",
+                "defaultValue": "",
+                "defaultValueType": "Others",
+                "collate": "",
+                "notNullOnConflict": "None",
+                "isAutoIncrement": false,
+                "oldName": "CREATEDTIMESTAMP"
+              }
+            ],
+            "indexes": [],
+            "primaryKey": {
+              "objectType": "PrimaryKey_SQLITE",
+              "name": "",
+              "fields": [
+                "ID"
+              ],
+              "onConflict": "None",
+              "oldName": ""
+            },
+            "foreignKeys": [],
+            "uniques": [],
+            "checks": [],
+            "triggers": []
+          },
+          {
+            "objectType": "Table_SQLITE",
+            "name": "User",
+            "autoIncrement": -1,
+            "isWithoutRowID": false,
+            "oldName": "User",
+            "rootPage": 10,
+            "sql": "CREATE TABLE \"User\" (\r\n  \"ID\" text NOT NULL,\r\n  \"FULLNAME\" text,\r\n  \"USERNAME\" text,\r\n  \"PASSWORD\" text NOT NULL,\r\n  PRIMARY KEY (\"ID\")\r\n)",
+            "hasIndexes": true,
+            "hasTriggers": false,
+            "hasAutoIncrementInDB": false,
+            "fields": [
+              {
+                "objectType": "TableField_SQLITE",
+                "name": "ID",
+                "type": "text",
+                "size": -2147483648,
+                "scale": -2147483648,
+                "isNullable": "No",
+                "defaultValue": "",
+                "defaultValueType": "Others",
+                "collate": "",
+                "notNullOnConflict": "None",
+                "isAutoIncrement": false,
+                "oldName": "ID"
+              },
+              {
+                "objectType": "TableField_SQLITE",
+                "name": "FULLNAME",
+                "type": "text",
+                "size": -2147483648,
+                "scale": -2147483648,
+                "isNullable": "Yes",
+                "defaultValue": "",
+                "defaultValueType": "Others",
+                "collate": "",
+                "notNullOnConflict": "None",
+                "isAutoIncrement": false,
+                "oldName": "FULLNAME"
+              },
+              {
+                "objectType": "TableField_SQLITE",
+                "name": "USERNAME",
+                "type": "text",
+                "size": -2147483648,
+                "scale": -2147483648,
+                "isNullable": "Yes",
+                "defaultValue": "",
+                "defaultValueType": "Others",
+                "collate": "",
+                "notNullOnConflict": "None",
+                "isAutoIncrement": false,
+                "oldName": "USERNAME"
+              },
+              {
+                "objectType": "TableField_SQLITE",
+                "name": "PASSWORD",
+                "type": "text",
+                "size": -2147483648,
+                "scale": -2147483648,
+                "isNullable": "No",
+                "defaultValue": "",
+                "defaultValueType": "Others",
+                "collate": "",
+                "notNullOnConflict": "None",
+                "isAutoIncrement": false,
+                "oldName": "PASSWORD"
+              }
+            ],
+            "indexes": [],
+            "primaryKey": {
+              "objectType": "PrimaryKey_SQLITE",
+              "name": "",
+              "fields": [
+                "ID"
+              ],
+              "onConflict": "None",
+              "oldName": ""
+            },
+            "foreignKeys": [],
+            "uniques": [],
+            "checks": [],
+            "triggers": []
+          }
+        ],
+        "views": []
+      }
+    ]
+  },
+  "diagrams": [
+    {
+      "name": "Diagram 1",
+      "paperWidth": 1,
+      "paperHeight": 1,
+      "tableFont": "Arial Unicode MS",
+      "tableFontSize": 14,
+      "isBalckWhite": false,
+      "showDBSchemaName": false,
+      "showViewRelations": true,
+      "notation": "default",
+      "showFieldComment": false,
+      "showTableComment": false,
+      "shapes": [
+        {
+          "type": "table",
+          "schemaName": "main",
+          "tableName": "Department",
+          "x": 250,
+          "y": 370,
+          "width": 150,
+          "height": 90,
+          "isBold": false,
+          "titleColor": {
+            "r": 55,
+            "g": 131,
+            "b": 192,
+            "a": 1
+          }
+        },
+        {
+          "type": "table",
+          "schemaName": "main",
+          "tableName": "Doctor",
+          "x": 30,
+          "y": 350,
+          "width": 170,
+          "height": 130,
+          "isBold": false,
+          "titleColor": {
+            "r": 55,
+            "g": 131,
+            "b": 192,
+            "a": 1
+          }
+        },
+        {
+          "type": "table",
+          "schemaName": "main",
+          "tableName": "History",
+          "x": 300,
+          "y": 30,
+          "width": 150,
+          "height": 130,
+          "isBold": false,
+          "titleColor": {
+            "r": 55,
+            "g": 131,
+            "b": 192,
+            "a": 1
+          }
+        },
+        {
+          "type": "table",
+          "schemaName": "main",
+          "tableName": "Patient",
+          "x": 30,
+          "y": 30,
+          "width": 195,
+          "height": 250,
+          "isBold": false,
+          "titleColor": {
+            "r": 55,
+            "g": 131,
+            "b": 192,
+            "a": 1
+          }
+        },
+        {
+          "type": "table",
+          "schemaName": "main",
+          "tableName": "User",
+          "x": 510,
+          "y": 30,
+          "width": 150,
+          "height": 130,
+          "isBold": false,
+          "titleColor": {
+            "r": 55,
+            "g": 131,
+            "b": 192,
+            "a": 1
+          }
+        }
+      ],
+      "layers": [],
+      "relations": [
+        {
+          "name": "fk_Doctor_Department_1",
+          "sourceTableName": "Doctor",
+          "sourceSchemaName": "main",
+          "lineWidth": 1,
+          "visible": true,
+          "vertices": [
+            {
+              "x": 215,
+              "y": 420
+            },
+            {
+              "x": 235,
+              "y": 420
+            }
+          ],
+          "label": {
+            "x": 211,
+            "y": 407,
+            "width": 173,
+            "height": 30,
+            "fontName": "Arial Unicode MS",
+            "fontSize": 14,
+            "fontColor": {
+              "r": 51,
+              "g": 51,
+              "b": 51,
+              "a": 1
+            },
+            "isFontBold": false,
+            "isFontItalic": false,
+            "isVisible": false
+          }
+        },
+        {
+          "name": "fk_History_User_1",
+          "sourceTableName": "History",
+          "sourceSchemaName": "main",
+          "lineWidth": 1,
+          "visible": true,
+          "vertices": [
+            {
+              "x": 465,
+              "y": 100
+            },
+            {
+              "x": 495,
+              "y": 100
+            }
+          ],
+          "label": {
+            "x": 461,
+            "y": 102,
+            "width": 122,
+            "height": 30,
+            "fontName": "Arial Unicode MS",
+            "fontSize": 14,
+            "fontColor": {
+              "r": 51,
+              "g": 51,
+              "b": 51,
+              "a": 1
+            },
+            "isFontBold": false,
+            "isFontItalic": false,
+            "isVisible": false
+          }
+        }
+      ],
+      "viewRelations": []
+    }
+  ]
+}

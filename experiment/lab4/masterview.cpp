@@ -78,6 +78,7 @@ void MasterView::goPreviousView()
 
         QWidget *widget = ui->stackedWidget->widget(count-1);
         ui->stackedWidget->removeWidget(widget);
+
         delete widget;
     }
 

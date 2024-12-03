@@ -19,6 +19,20 @@
   <property name="windowTitle">
    <string>编辑患者信息</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QLineEdit{
+	margin-left:10px;
+}
+QSpinBox{
+margin-left:10px;
+}
+QComboBox{
+margin-left:10px;
+}
+QDateEdit{
+margin-left:10px;
+}</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <spacer name="verticalSpacer_3">
@@ -136,7 +150,11 @@
           </widget>
          </item>
          <item row="5" column="1">
-          <widget class="QSpinBox" name="dbHigh"/>
+          <widget class="QSpinBox" name="dbHigh">
+           <property name="maximum">
+            <number>300</number>
+           </property>
+          </widget>
          </item>
          <item row="6" column="0">
           <widget class="QLabel" name="label_7">
@@ -149,7 +167,11 @@
           </widget>
          </item>
          <item row="6" column="1">
-          <widget class="QSpinBox" name="dbWeight"/>
+          <widget class="QSpinBox" name="dbWeight">
+           <property name="maximum">
+            <number>300</number>
+           </property>
+          </widget>
          </item>
          <item row="7" column="0">
           <widget class="QLabel" name="label_8">

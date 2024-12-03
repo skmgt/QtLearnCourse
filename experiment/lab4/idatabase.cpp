@@ -3,14 +3,13 @@
 void IDatabase::initDatabase()
 {
     database = QSqlDatabase::addDatabase("QSQLITE"); //数据库驱动
-    QString aFile ="E:/Program/Qt/codeRepository/QtLearnCourse/experiment/lab4/build/lab4.db" ;
-    qDebug()<<aFile;
+    QString aFile ="../../lab4.db" ;
     database.setDatabaseName(aFile);
 
     if(!database.open()){
         qDebug()<<"failed to open database";
     }else
-        qDebug()<<"open database is ok";
+        qDebug()<<"open database is ok"<<database.connectionName();;
 }
 
 bool IDatabase::initPatientModel()
@@ -28,17 +27,21 @@ bool IDatabase::initPatientModel()
 
 int IDatabase::addNewPatient()
 {
-    patientTabModel->insertRow(patientTabModel->rowCount(),QModelIndex());
-    QModelIndex curIndex = patientTabModel->index(patientTabModel->rowCount()-1,1);
+    patientTabModel->insertRow(patientTabModel->rowCount(),QModelIndex());  //在末尾添加一个记录
+    QModelIndex curIndex = patientTabModel->index(patientTabModel->rowCount() - 1, 1); //创建最后一行的ModeIndex
 
     int curRecNo = curIndex.row();
-    QSqlRecord curRec = patientTabModel->record(curRecNo);
+    QSqlRecord curRec = patientTabModel->record(curRecNo);  //获取当前记录
+
     curRec.setValue("CREATEDTIMESTAMP",QDateTime::currentDateTime().toString("yyyy-MM-dd"));
     curRec.setValue("ID",QUuid::createUuid().toString(QUuid::WithoutBraces));
-    patientTabModel->setRecord(curRecNo,curRec);
-    return curIndex.row();
 
+    patientTabModel->setRecord(curRecNo,curRec);
+
+    return curIndex.row();
 }
+
+
 
 bool IDatabase::searchPatient(QString filter)
 {
@@ -56,7 +59,26 @@ bool IDatabase::deleteCurrentPatient()
 
 bool IDatabase::submitPatientEdit()
 {
-    return patientTabModel->submitAll();
+    bool flag = patientTabModel->submitAll();
+    for (int row = 0; row < patientTabModel->rowCount(); ++row) {
+        // 获取某一行的记录
+        QSqlRecord record = patientTabModel->record(row);
+
+        // 遍历记录中的所有列
+        for (int i = 0; i < record.count(); ++i) {
+            QVariant value = record.value(i);
+            QString fieldName = patientTabModel->headerData(i, Qt::Horizontal).toString();
+            qDebug() << fieldName << ": " << value.toString();
+        }
+        //QVariant id = patientTabModel->data(patientTabModel->index(row, patientTabModel->fieldIndex("ID")));
+        // qDebug() << "Row" << row << "ID:" << id.toString();
+    }
+    if(flag)qDebug()<<"成功提交";
+    else {
+        qDebug() << "Failed to submit data:" << patientTabModel->lastError().text();
+
+    }
+    return flag;
 }
 
 void IDatabase::revertPatientEdit()
