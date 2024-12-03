@@ -12,3 +12,25 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+void MainWindow::on_startStopButton_clicked()
+{
+    static bool started = false;
+    started = !started;
+    if(started){
+        ui->startStopButton->setText("停止服务器");
+        logMessage("服务器已启动");
+    }
+    else{
+        ui->startStopButton->setText("启动服务器");
+        logMessage("服务器已停止");
+    }
+
+
+}
+
+void MainWindow::logMessage(const QString &msg)
+{
+    ui->logEdit->appendPlainText(msg);
+}
+
