@@ -7,6 +7,10 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->stackedWidget->setCurrentWidget(ui->loginPage);
+    m_chatClient = new ChatClient(this);
+
+    connect(m_chatClient,&ChatClient::connected,this,&MainWindow::connectedToServer);
+    connect(m_chatClient,&ChatClient::messageReceived,this,&MainWindow::messageReceived);
 }
 
 MainWindow::~MainWindow()
@@ -16,18 +20,31 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_loginButton_clicked()
 {
-    ui->stackedWidget->setCurrentWidget(ui->chatPage);
+    m_chatClient->connectToServer(QHostAddress(ui->serverEdit->text()),1967);
 }
 
 
 void MainWindow::on_submitButton_clicked()
 {
-
+    if(!ui->sendlineEdit->text().isEmpty())
+        m_chatClient->sendMessage(ui->sendlineEdit->text());
 }
 
 
 void MainWindow::on_logoutButton_clicked()
 {
     ui->stackedWidget->setCurrentWidget(ui->loginPage);
+
+}
+
+void MainWindow::connectedToServer()
+{
+    ui->stackedWidget->setCurrentWidget(ui->chatPage);
+    m_chatClient->sendMessage(ui->usernameEdit->text(),"login");
+}
+
+void MainWindow::messageReceived(const QString &text)
+{
+    ui->roomTextEdit->append(text);
 }
 
