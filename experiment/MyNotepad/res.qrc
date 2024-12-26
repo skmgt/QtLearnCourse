@@ -23,5 +23,6 @@
         <file>img/new.png</file>
         <file>img/logo.png</file>
         <file>img/autoSave.png</file>
+        <file>img/recentFiles.png</file>
     </qresource>
 </RCC>
