@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(tabWidget, &QTabWidget::currentChanged, this, &MainWindow::switchTab);
     // 连接关闭请求信号
     connect(tabWidget, &QTabWidget::tabCloseRequested, this, &MainWindow::closeTab);
-
+    on_actionNew_triggered();
     textChanged = false;
     autoSaveTimer=new QTimer(this);
     connect(autoSaveTimer, &QTimer::timeout, this, &MainWindow::on_actionSave_triggered);
@@ -43,13 +43,13 @@ MainWindow::MainWindow(QWidget *parent)
     ui->actionRedo->setEnabled(false);
     ui->actionUndo->setEnabled(false);
     ui->actionPaste->setEnabled(false);
-
-    QPlainTextEdit::LineWrapMode mode = ui->textEdit->lineWrapMode();
+    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    QPlainTextEdit::LineWrapMode mode = textEdit->lineWrapMode();
     if(mode == QTextEdit::NoWrap){
-        ui->textEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
+        textEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
         ui->actionLineWrap->setChecked(false);
     } else{
-        ui->textEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
+        textEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
         ui->actionLineWrap->setChecked(true);
     }
 
@@ -113,14 +113,16 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_actionFind_triggered()
 {
-    SearchDialog dlg(this,ui->textEdit);
+    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    SearchDialog dlg(this,textEdit);
     dlg.exec();
 }
 
 
 void MainWindow::on_actionReplace_triggered()
 {
-    ReplaceDialog dlg(this,ui->textEdit);
+    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    ReplaceDialog dlg(this,textEdit);
     dlg.exec();
 }
 
@@ -130,7 +132,7 @@ void MainWindow::on_actionNew_triggered()
     if(!userEditConfirmed())
         return;
     filePath = "";
-    // ui->textEdit->clear();
+
     this->setWindowTitle(tr("新建文本文件 - 编辑器"));
     CodeEditor* textEdit = new CodeEditor(this);
     tabWidget->addTab(textEdit,"新建文本文件.txt");
@@ -157,8 +159,7 @@ void MainWindow::on_actionOpen_triggered()
     QTextStream in(&file);
     QString text = in.readAll();
 
-    // ui->textEdit->setPlainText(text);
-    // ui->textEdit->insertPlainText(text);
+
     file.close();
 
     CodeEditor *textEdit = new CodeEditor(this);
@@ -269,26 +270,26 @@ void MainWindow::on_textEdit_textChanged()
 
 bool MainWindow::userEditConfirmed()
 {
-    if(textChanged){
-        QString path = (filePath != "") ? filePath : "无标题.txt";
-        QMessageBox msg(this);
-        msg.setIcon(QMessageBox::Question);
-        msg.setWindowTitle("...");
-        msg.setWindowFlag(Qt::Drawer);
-        msg.setText(QString("是否将更改保存到\n") +"\"" + path + "\" ?");
-        msg.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-        int r = msg.exec();
-        switch(r){
-        case QMessageBox::Yes:
-            on_actionSave_triggered();
-            break;
-        case QMessageBox::No:
-            textChanged = false;
-            break;
-        case QMessageBox::Cancel:
-            return false;
-        }
-    }
+    // if(textChanged){
+    //     QString path = (filePath != "") ? filePath : "无标题.txt";
+    //     QMessageBox msg(this);
+    //     msg.setIcon(QMessageBox::Question);
+    //     msg.setWindowTitle("...");
+    //     msg.setWindowFlag(Qt::Drawer);
+    //     msg.setText(QString("是否将更改保存到\n") +"\"" + path + "\" ?");
+    //     msg.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+    //     int r = msg.exec();
+    //     switch(r){
+    //     case QMessageBox::Yes:
+    //         on_actionSave_triggered();
+    //         break;
+    //     case QMessageBox::No:
+    //         textChanged = false;
+    //         break;
+    //     case QMessageBox::Cancel:
+    //         return false;
+    //     }
+    // }
 
     return true;
 }
@@ -296,33 +297,38 @@ bool MainWindow::userEditConfirmed()
 
 void MainWindow::on_actionUndo_triggered()
 {
-    ui->textEdit->undo();
+    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    textEdit->undo();
 }
 
 
 void MainWindow::on_actionCut_triggered()
 {
-    ui->textEdit->cut();
+    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    textEdit->cut();
     ui->actionPaste->setEnabled(true);
 }
 
 
 void MainWindow::on_actionCopy_triggered()
 {
-    ui->textEdit->copy();
+    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    textEdit->copy();
     ui->actionPaste->setEnabled(true);
 }
 
 
 void MainWindow::on_actionPaste_triggered()
 {
-    ui->textEdit->paste();
+    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    textEdit->paste();
 }
 
 
 void MainWindow::on_actionRedo_triggered()
 {
-    ui->textEdit->redo();
+    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    textEdit->redo();
 }
 
 
@@ -348,18 +354,20 @@ void MainWindow::on_textEdit_copyAvailable(bool b)
 
 void MainWindow::on_actionFontColor_triggered()
 {
+    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
     QColor color = QColorDialog::getColor(Qt::black,this,"选择颜色");
     if(color.isValid()){
-        ui->textEdit->setStyleSheet(QString("QPlainTextEdit{color: %1}").arg(color.name()));
+        textEdit->setStyleSheet(QString("QPlainTextEdit{color: %1}").arg(color.name()));
     }
 }
 
 
 void MainWindow::on_actionEditColor_triggered()
 {
+    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
     QColor color = QColorDialog::getColor(Qt::black,this,"选择颜色");
     if(color.isValid()){
-        ui->textEdit->setStyleSheet(QString("QPlainTextEdit{background-color: %1}").arg(color.name()));
+        textEdit->setStyleSheet(QString("QPlainTextEdit{background-color: %1}").arg(color.name()));
     }
 }
 
@@ -372,12 +380,13 @@ void MainWindow::on_actionFontBackgroundColor_triggered()
 
 void MainWindow::on_actionLineWrap_triggered()
 {
-    QPlainTextEdit::LineWrapMode mode = ui->textEdit->lineWrapMode();
+    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    QPlainTextEdit::LineWrapMode mode = textEdit->lineWrapMode();
     if(mode == QTextEdit::NoWrap){
-        ui->textEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
+        textEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
         ui->actionLineWrap->setChecked(true);
     } else{
-        ui->textEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
+        textEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
         ui->actionLineWrap->setChecked(false);
     }
 }
@@ -387,9 +396,9 @@ void MainWindow::on_actionFont_triggered()
 {
     bool ok=false;
     QFont font = QFontDialog::getFont(&ok,this);
-
+    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
     if(ok){
-        ui->textEdit->setFont(font);
+        textEdit->setFont(font);
     }
 }
 
@@ -412,7 +421,8 @@ void MainWindow::on_actionStatusBar_triggered()
 
 void MainWindow::on_actionSelectAll_triggered()
 {
-    ui->textEdit->selectAll();
+    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    textEdit->selectAll();
 }
 
 
@@ -426,11 +436,12 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::on_textEdit_cursorPositionChanged()
 {
+    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
     int col =0;
     int row=0;
     int flag=-1;
-    int pos = ui->textEdit->textCursor().position();
-    QString text = ui->textEdit->toPlainText();
+    int pos = textEdit->textCursor().position();
+    QString text = textEdit->toPlainText();
 
     for(int i=0;i<pos;i++){
         if(text[i]=='\n'){
@@ -447,7 +458,8 @@ void MainWindow::on_textEdit_cursorPositionChanged()
 
 void MainWindow::on_actionLineNumber_triggered(bool checked)
 {
-    ui->textEdit->hideLineNumberArea(checked);
+    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    textEdit->hideLineNumberArea(checked);
 }
 
 
