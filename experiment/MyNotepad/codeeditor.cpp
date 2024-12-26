@@ -1,15 +1,16 @@
 #include "codeeditor.h"
 #include <QPainter>
 #include <QTextBlock>
-
+#include <QRegularExpression>
+#include <QDesktopServices>
 CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent)
 {
+
     lineNumberArea = new LineNumberArea(this);
 
     connect(this, &CodeEditor::blockCountChanged, this, &CodeEditor::updateLineNumberAreaWidth);
     connect(this, &CodeEditor::updateRequest, this, &CodeEditor::updateLineNumberArea);
     connect(this, &CodeEditor::cursorPositionChanged, this, &CodeEditor::highlightCurrentLine);
-
 
 
     updateLineNumberAreaWidth(0);
@@ -58,12 +59,43 @@ void CodeEditor::hideLineNumberArea(bool flag)
     }
 }
 
+bool CodeEditor::isValidLink(const QString &text)
+{
+    QRegularExpression urlRegex(R"((http|https|ftp|mailto)://[^\s]+)");
+    return urlRegex.match(text).hasMatch();
+}
+
 void CodeEditor::resizeEvent(QResizeEvent *e)
 {
     QPlainTextEdit::resizeEvent(e);
 
     QRect cr = contentsRect();
     lineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
+}
+
+void CodeEditor::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        QTextCursor cursor = cursorForPosition(event->pos());
+        QString clickedText = cursor.selectedText();
+        qDebug()<<clickedText;
+        // 如果没有选中文本，就获取光标下的文本
+        if (clickedText.isEmpty()) {
+            clickedText = cursor.block().text();
+        }
+        qDebug()<<clickedText;
+        // 如果文本包含链接，就打开它
+        if (isValidLink(clickedText)) {
+            QUrl url(clickedText);
+            if (url.isValid()) {
+                // 打开链接
+                QDesktopServices::openUrl(url);
+            }
+        }
+    }
+
+    // 继续处理其他鼠标事件
+    QPlainTextEdit::mouseReleaseEvent(event);
 }
 
 void CodeEditor::highlightCurrentLine()

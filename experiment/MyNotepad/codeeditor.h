@@ -15,6 +15,8 @@ public:
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
+    // 捕捉鼠标点击事件
+    void mouseReleaseEvent(QMouseEvent *event) override;
 
 private slots:
     void updateLineNumberAreaWidth(int newBlockCount);
@@ -23,8 +25,10 @@ private slots:
 public slots:
     void hideLineNumberArea(bool flag);
 
+
 private:
     QWidget *lineNumberArea;
+    bool isValidLink(const QString &text);
 };
 
 class LineNumberArea : public QWidget
