@@ -8,6 +8,10 @@
 #include <QTextStream>
 #include <QColorDialog>
 #include <QFontDialog>
+#include <QClipboard>
+#include <QGuiApplication>
+#include <QMimeData>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -38,12 +42,13 @@ MainWindow::MainWindow(QWidget *parent)
     author->setText(tr("xxx"));
     ui->statusbar->addPermanentWidget(author);
 
-    ui->actionCopy->setEnabled(false);
-    ui->actionCut->setEnabled(false);
-    ui->actionRedo->setEnabled(false);
-    ui->actionUndo->setEnabled(false);
-    ui->actionPaste->setEnabled(false);
-    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+
+    // 捕获当前选项卡切换的信号
+    connect(tabWidget, &QTabWidget::currentChanged, this, &MainWindow::updateActions);
+    // 初始化 QAction 状态
+    updateActions();
+
+    CodeEditor * textEdit = currentCodeEdit();
     QPlainTextEdit::LineWrapMode mode = textEdit->lineWrapMode();
     if(mode == QTextEdit::NoWrap){
         textEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
@@ -103,6 +108,26 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::undoAvailable(bool b)
+{
+    ui->actionUndo->setEnabled(b);
+
+}
+
+void MainWindow::redoAvailable(bool b)
+{
+    ui->actionRedo->setEnabled(b);
+}
+
+void MainWindow::copyAvailable(bool b)
+{
+    ui->actionCopy->setEnabled(b);
+    ui->actionCut->setEnabled(b);
+}
+
+
+
+
 
 void MainWindow::on_actionAbout_triggered()
 {
@@ -113,7 +138,7 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_actionFind_triggered()
 {
-    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    CodeEditor * textEdit = currentCodeEdit();
     SearchDialog dlg(this,textEdit);
     dlg.exec();
 }
@@ -121,7 +146,7 @@ void MainWindow::on_actionFind_triggered()
 
 void MainWindow::on_actionReplace_triggered()
 {
-    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    CodeEditor * textEdit = currentCodeEdit();
     ReplaceDialog dlg(this,textEdit);
     dlg.exec();
 }
@@ -177,7 +202,7 @@ void MainWindow::on_actionOpen_triggered()
 void MainWindow::on_actionSave_triggered()
 {
 
-    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    CodeEditor * textEdit = currentCodeEdit();
     if(filePath ==""){
         QString filename = QFileDialog::getSaveFileName(this,"保存文件",".",tr("Text files (*.txt) "));
         QFile file(filename);
@@ -218,7 +243,7 @@ void MainWindow::on_actionSave_triggered()
 
 void MainWindow::on_actionSaveAs_triggered()
 {
-    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    CodeEditor * textEdit = currentCodeEdit();
     QString filename = QFileDialog::getSaveFileName(this,"保存文件",".",tr("Text files (*.txt) "));
     QFile file(filename);
     if(!file.open(QFile::WriteOnly | QFile::Text)){
@@ -294,17 +319,27 @@ bool MainWindow::userEditConfirmed()
     return true;
 }
 
+CodeEditor *MainWindow::currentCodeEdit()
+{
+    // 获取当前选项卡中的 CodeEdit
+    QWidget *currentWidget = tabWidget->currentWidget();
+    if (currentWidget) {
+        return qobject_cast<CodeEditor *>(currentWidget);
+    }
+    return nullptr;
+}
+
 
 void MainWindow::on_actionUndo_triggered()
 {
-    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    CodeEditor * textEdit = currentCodeEdit();
     textEdit->undo();
 }
 
 
 void MainWindow::on_actionCut_triggered()
 {
-    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    CodeEditor * textEdit = currentCodeEdit();
     textEdit->cut();
     ui->actionPaste->setEnabled(true);
 }
@@ -312,7 +347,7 @@ void MainWindow::on_actionCut_triggered()
 
 void MainWindow::on_actionCopy_triggered()
 {
-    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    CodeEditor * textEdit = currentCodeEdit();
     textEdit->copy();
     ui->actionPaste->setEnabled(true);
 }
@@ -320,41 +355,20 @@ void MainWindow::on_actionCopy_triggered()
 
 void MainWindow::on_actionPaste_triggered()
 {
-    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    CodeEditor * textEdit = currentCodeEdit();
     textEdit->paste();
 }
 
 
 void MainWindow::on_actionRedo_triggered()
 {
-    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    CodeEditor * textEdit = currentCodeEdit();
     textEdit->redo();
 }
 
-
-void MainWindow::on_textEdit_undoAvailable(bool b)
-{
-    ui->actionUndo->setEnabled(b);
-
-}
-
-
-void MainWindow::on_textEdit_redoAvailable(bool b)
-{
-    ui->actionRedo->setEnabled(b);
-}
-
-
-void MainWindow::on_textEdit_copyAvailable(bool b)
-{
-    ui->actionCopy->setEnabled(b);
-    ui->actionCut->setEnabled(b);
-}
-
-
 void MainWindow::on_actionFontColor_triggered()
 {
-    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    CodeEditor * textEdit = currentCodeEdit();
     QColor color = QColorDialog::getColor(Qt::black,this,"选择颜色");
     if(color.isValid()){
         textEdit->setStyleSheet(QString("QPlainTextEdit{color: %1}").arg(color.name()));
@@ -364,7 +378,7 @@ void MainWindow::on_actionFontColor_triggered()
 
 void MainWindow::on_actionEditColor_triggered()
 {
-    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    CodeEditor * textEdit = currentCodeEdit();
     QColor color = QColorDialog::getColor(Qt::black,this,"选择颜色");
     if(color.isValid()){
         textEdit->setStyleSheet(QString("QPlainTextEdit{background-color: %1}").arg(color.name()));
@@ -380,7 +394,7 @@ void MainWindow::on_actionFontBackgroundColor_triggered()
 
 void MainWindow::on_actionLineWrap_triggered()
 {
-    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    CodeEditor * textEdit = currentCodeEdit();
     QPlainTextEdit::LineWrapMode mode = textEdit->lineWrapMode();
     if(mode == QTextEdit::NoWrap){
         textEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
@@ -396,7 +410,7 @@ void MainWindow::on_actionFont_triggered()
 {
     bool ok=false;
     QFont font = QFontDialog::getFont(&ok,this);
-    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    CodeEditor * textEdit = currentCodeEdit();
     if(ok){
         textEdit->setFont(font);
     }
@@ -421,7 +435,7 @@ void MainWindow::on_actionStatusBar_triggered()
 
 void MainWindow::on_actionSelectAll_triggered()
 {
-    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    CodeEditor * textEdit = currentCodeEdit();
     textEdit->selectAll();
 }
 
@@ -436,7 +450,7 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::on_textEdit_cursorPositionChanged()
 {
-    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    CodeEditor * textEdit = currentCodeEdit();
     int col =0;
     int row=0;
     int flag=-1;
@@ -458,7 +472,7 @@ void MainWindow::on_textEdit_cursorPositionChanged()
 
 void MainWindow::on_actionLineNumber_triggered(bool checked)
 {
-    CodeEditor * textEdit = qobject_cast<CodeEditor*>(tabWidget->currentWidget());
+    CodeEditor * textEdit = currentCodeEdit();
     textEdit->hideLineNumberArea(checked);
 }
 
@@ -479,7 +493,7 @@ void MainWindow::switchTab(int index)
 {
     if (index >= 0) {
         QWidget *widget = tabWidget->widget(index);
-        QTextEdit *editor = qobject_cast<QTextEdit *>(widget);
+        CodeEditor *editor = qobject_cast<CodeEditor *>(widget);
         if (editor) {
             currentFilePath = editor->property("filePath").toString();
         }
@@ -504,6 +518,45 @@ void MainWindow::clearHistory()
         // 设置为不可见
         action->setVisible(false);
     }
+
+}
+
+void MainWindow::updateActions()
+{
+    // 获取当前的 CodeEdit
+    CodeEditor *editor = currentCodeEdit();
+    if (!editor) {
+        // 如果没有有效的 CodeEdit，则禁用所有动作
+        ui->actionCopy->setEnabled(false);
+        ui->actionUndo->setEnabled(false);
+        ui->actionRedo->setEnabled(false);
+        ui->actionCut->setEnabled(false);
+        ui->actionPaste->setEnabled(false);
+        return;
+    }
+
+    // 断开之前的连接
+    disconnect(editor, &CodeEditor::copyAvailable, ui->actionCopy, &QAction::setEnabled);
+    disconnect(editor, &CodeEditor::copyAvailable, ui->actionCut, &QAction::setEnabled);
+    disconnect(editor, &CodeEditor::undoAvailable, ui->actionUndo, &QAction::setEnabled);
+    disconnect(editor, &CodeEditor::redoAvailable, ui->actionRedo, &QAction::setEnabled);
+
+
+    // 动态连接当前 CodeEdit 的信号到 QAction
+    connect(editor, &CodeEditor::copyAvailable, ui->actionCopy, &QAction::setEnabled);
+    connect(editor, &CodeEditor::copyAvailable, ui->actionCut, &QAction::setEnabled);
+    connect(editor, &CodeEditor::undoAvailable, ui->actionUndo, &QAction::setEnabled);
+    connect(editor, &CodeEditor::redoAvailable, ui->actionRedo, &QAction::setEnabled);
+
+    // 设置 QAction 的初始状态
+    ui->actionCopy->setEnabled(editor->textCursor().hasSelection());
+    ui->actionCut->setEnabled(editor->textCursor().hasSelection());
+    ui->actionUndo->setEnabled(editor->document()->isUndoAvailable());
+    ui->actionRedo->setEnabled(editor->document()->isRedoAvailable());
+    // 使用 QClipboard 来检查是否有可粘贴的内容
+    QClipboard *clipboard = QGuiApplication::clipboard();
+    bool canPaste = clipboard->mimeData()->hasText();  // 检查剪贴板是否有文本
+    ui->actionPaste->setEnabled(canPaste);  // 启用或禁用粘贴操作
 
 }
 
@@ -576,3 +629,7 @@ void MainWindow::loadFile(const QString &fileName)
     QApplication::restoreOverrideCursor();
 
 }
+
+
+
+

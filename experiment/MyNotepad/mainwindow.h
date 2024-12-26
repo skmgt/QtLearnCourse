@@ -22,6 +22,12 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void undoAvailable(bool b);
+
+    void redoAvailable(bool b);
+
+    void copyAvailable(bool b);
+
 private slots:
     void on_actionAbout_triggered();
 
@@ -49,12 +55,6 @@ private slots:
 
     void on_actionRedo_triggered();
 
-    void on_textEdit_undoAvailable(bool b);
-
-    void on_textEdit_redoAvailable(bool b);
-
-    void on_textEdit_copyAvailable(bool b);
-
     void on_actionFontColor_triggered();
 
     void on_actionEditColor_triggered();
@@ -81,7 +81,7 @@ private slots:
     void switchTab(int index);
     void closeTab(int index);
     void clearHistory();
-
+    void updateActions();  // 更新 QAction 的状态
 
 private:
     Ui::MainWindow *ui;
@@ -107,6 +107,7 @@ private:
     bool userEditConfirmed();
     void setupEditor();
 
+    CodeEditor *currentCodeEdit();  // 返回当前选项卡中的 CodeEdit
 
 
 };
