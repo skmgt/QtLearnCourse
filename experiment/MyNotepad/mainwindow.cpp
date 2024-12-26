@@ -24,8 +24,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(tabWidget, &QTabWidget::tabCloseRequested, this, &MainWindow::closeTab);
 
     textChanged = false;
-    on_actionNew_triggered();
-
     autoSaveTimer=new QTimer(this);
     connect(autoSaveTimer, &QTimer::timeout, this, &MainWindow::on_actionSave_triggered);
     statusLabel.setMidLineWidth(150);
@@ -60,6 +58,44 @@ MainWindow::MainWindow(QWidget *parent)
     ui->actionToolBar->setChecked(true);
     // ui->actionLineNumber->setChecked(false);
     on_actionLineNumber_triggered(false);
+
+
+    QAction* recentFileAction = nullptr;
+    for(auto i = 0; i <= maxFileNr; ++i){
+        recentFileAction = new QAction(this);
+        recentFileAction->setVisible(false);
+        if(i==maxFileNr){
+            connect(recentFileAction,&QAction::triggered,this,&MainWindow::clearHistory);
+        }else{
+            connect(recentFileAction, &QAction::triggered, this, [=]()
+                    {
+                        loadFile(recentFileAction->data().toString());
+                    });
+        }
+
+        recentFileActionList.append(recentFileAction);
+    }
+
+
+
+    // 获取 fileMenu 中的所有动作
+    recentFilesMenu = new QMenu(tr("历史记录"), ui->fileMenu);
+    QList<QAction *> actions = ui->fileMenu->actions();
+    if (actions.size() > 1) {
+        // 获取倒数第二个动作
+        QAction *secondLastAction = actions[actions.size() - 2];
+
+        // 插入 recentFilesMenu 在 secondLastAction 之前
+        ui->fileMenu->insertMenu(secondLastAction, recentFilesMenu);
+    } else {
+        ui->fileMenu->addMenu(recentFilesMenu);
+    }
+
+    for(auto i = 0; i <= maxFileNr; ++i)
+        recentFilesMenu->addAction(recentFileActionList.at(i));
+
+    updateRecentActionList();
+
 }
 
 MainWindow::~MainWindow()
@@ -109,7 +145,7 @@ void MainWindow::on_actionOpen_triggered()
     if(!userEditConfirmed())
         return;
 
-    QString filename = QFileDialog::getOpenFileName(this,"打开文件",".",tr("Text files (*.txt) ;;All (*.*)"));
+    QString filename = QFileDialog::getOpenFileName(this,"打开文件",".",tr("All (*.*)"));
     QFile file(filename);
 
     if(!file.open(QFile::ReadOnly | QFile::Text)){
@@ -131,6 +167,7 @@ void MainWindow::on_actionOpen_triggered()
     tabWidget->setCurrentWidget(textEdit);
     connect(textEdit, &CodeEditor::textChanged, this, &MainWindow::on_textEdit_textChanged);
     this->setWindowTitle(QFileInfo(filename).absoluteFilePath());
+    adjustForCurrentFile(filePath);
 
     textChanged = false;
 }
@@ -215,23 +252,19 @@ void MainWindow::on_textEdit_textChanged()
     if (index == -1) return;  // 如果没有 tab 选中，则返回
     // qDebug()<<index;
     // 获取当前 tab 页对应的 CodeEdit 控件
-    CodeEditor *codeEdit = qobject_cast<CodeEditor*>(tabWidget->widget(index));
-    if (codeEdit) {
-        // 获取当前 tab 页的标题
-        QString currentTabTitle = tabWidget->tabText(index);
-        // qDebug()<<currentTabTitle;
-        // 如果标题不包含 "*"，则加上 "*"
-        if (!currentTabTitle.startsWith("*")) {
-            tabWidget->setTabText(index, "*" + currentTabTitle);
-        }
-        statusLabel.setText("length: " + QString::number(codeEdit->toPlainText().length())
-                            + "     lines: " +
-                            QString::number(codeEdit->document()->lineCount()));
-    }
-
-
-
-
+    // CodeEditor *codeEdit = qobject_cast<CodeEditor*>(tabWidget->widget(index));
+    // if (codeEdit) {
+    //     // 获取当前 tab 页的标题
+    //     QString currentTabTitle = tabWidget->tabText(index);
+    //     // qDebug()<<currentTabTitle;
+    //     // 如果标题不包含 "*"，则加上 "*"
+    //     if (!currentTabTitle.startsWith("*")) {
+    //         tabWidget->setTabText(index, "*" + currentTabTitle);
+    //     }
+    //     statusLabel.setText("length: " + QString::number(codeEdit->toPlainText().length())
+    //                         + "     lines: " +
+    //                         QString::number(codeEdit->document()->lineCount()));
+    // }
 }
 
 bool MainWindow::userEditConfirmed()
@@ -447,3 +480,87 @@ void MainWindow::closeTab(int index)
     tabWidget->removeTab(index);
 }
 
+void MainWindow::clearHistory()
+{
+    for (auto action : recentFileActionList) {
+        // 清空文本
+        action->setText(QString());
+
+        // 清空数据
+        action->setData(QVariant());
+
+        // 设置为不可见
+        action->setVisible(false);
+    }
+
+}
+
+void MainWindow::adjustForCurrentFile(const QString &filePath)
+{
+    currentFilePath = filePath;
+    setWindowFilePath(currentFilePath);
+
+    QSettings settings;
+    QStringList recentFilePaths = settings.value("recentFiles").toStringList();
+    recentFilePaths.removeAll(filePath);
+    recentFilePaths.prepend(filePath);
+    while (recentFilePaths.size() > maxFileNr)
+        recentFilePaths.removeLast();
+    settings.setValue("recentFiles", recentFilePaths);
+
+    // see note
+    updateRecentActionList();
+
+}
+
+void MainWindow::updateRecentActionList()
+{
+    QSettings settings;
+    QStringList recentFilePaths = settings.value("recentFiles").toStringList();
+
+    auto itEnd = 0;
+    if(recentFilePaths.size() <= maxFileNr)
+        itEnd = recentFilePaths.size();
+    else
+        itEnd = maxFileNr;
+
+    for (auto i = 0; i < itEnd; ++i) {
+        QString strippedName = QString::number(i + 1) + ". " + QFileInfo(recentFilePaths.at(i)).fileName();
+        recentFileActionList.at(i)->setText(strippedName);
+        recentFileActionList.at(i)->setData(recentFilePaths.at(i));
+        recentFileActionList.at(i)->setVisible(true);
+    }
+    for (auto i = itEnd; i < maxFileNr; ++i)
+        recentFileActionList.at(i)->setVisible(false);
+
+    if(itEnd>0){
+        recentFileActionList.at(maxFileNr)->setText("清除历史记录");
+        recentFileActionList.at(maxFileNr)->setVisible(true);
+        qDebug()<<recentFileActionList.at(maxFileNr);
+    }
+
+}
+
+void MainWindow::loadFile(const QString &fileName)
+{
+    QFile file(fileName);
+    if (!file.open(QFile::ReadOnly | QFile::Text)) {
+        QMessageBox::warning(this, tr("Recent Files"),
+                             tr("Cannot read file %1:\n%2.")
+                                 .arg(fileName)
+                                 .arg(file.errorString()));
+        return;
+    }
+
+    QTextStream in(&file);
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    CodeEditor *textEdit = new CodeEditor(this);
+    textEdit->setPlainText(in.readAll());
+    tabWidget->addTab(textEdit,QFileInfo(fileName).fileName());
+    tabWidget->setCurrentWidget(textEdit);
+    connect(textEdit, &CodeEditor::textChanged, this, &MainWindow::on_textEdit_textChanged);
+
+
+    QApplication::restoreOverrideCursor();
+
+}

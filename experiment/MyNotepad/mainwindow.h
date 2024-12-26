@@ -6,8 +6,8 @@
 #include <QTimer>
 #include <QTabWidget>
 #include "codeeditor.h"
-
-
+#include "highlighter.h"
+#include <QSettings>
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -80,6 +80,9 @@ private slots:
     void on_actionAutoSave_triggered(bool checked);
     void switchTab(int index);
     void closeTab(int index);
+    void clearHistory();
+
+
 private:
     Ui::MainWindow *ui;
     QString currentFilePath;
@@ -88,8 +91,23 @@ private:
     QLabel statusLabel;
     QTimer* autoSaveTimer;
     QString filePath;
+    highlighter* highl; // 语法高亮对象
     bool textChanged;
 
+    QAction* openAction;
+    QList<QAction*> recentFileActionList;
+    const int maxFileNr=10;
+    QMenu* recentFilesMenu;
+
+
+    void adjustForCurrentFile(const QString& filePath);
+    void updateRecentActionList();
+    void loadFile(const QString& fileName);
+
     bool userEditConfirmed();
+    void setupEditor();
+
+
+
 };
 #endif // MAINWINDOW_H

@@ -61,7 +61,7 @@
      <height>18</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu">
+   <widget class="QMenu" name="fileMenu">
     <property name="title">
      <string>文件(&amp;F)</string>
     </property>
@@ -98,6 +98,8 @@
     <addaction name="separator"/>
     <addaction name="actionEditColor"/>
     <addaction name="actionFontBackgroundColor"/>
+    <addaction name="actionTheme"/>
+    <addaction name="actionLanguage"/>
    </widget>
    <widget class="QMenu" name="menu_V">
     <property name="title">
@@ -112,7 +114,7 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
-   <addaction name="menu"/>
+   <addaction name="fileMenu"/>
    <addaction name="menu_2"/>
    <addaction name="menu_O"/>
    <addaction name="menu_V"/>
@@ -534,6 +536,27 @@
    </property>
    <property name="menuRole">
     <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionTheme">
+   <property name="text">
+    <string>主题切换</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionLanguage">
+   <property name="text">
+    <string>语言设置</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
+  <action name="action">
+   <property name="text">
+    <string>历史记录</string>
    </property>
   </action>
  </widget>
