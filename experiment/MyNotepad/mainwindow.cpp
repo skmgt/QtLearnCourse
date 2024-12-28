@@ -10,6 +10,7 @@
 #include <QFontDialog>
 #include <QClipboard>
 #include <QGuiApplication>
+#include "BookmarkDialog.h"
 #include <QMimeData>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -101,6 +102,21 @@ MainWindow::MainWindow(QWidget *parent)
 
     updateRecentActionList();
 
+
+
+    //书签功能初始化
+    bookMarkMenu = new QMenu(tr("书签"),ui->showMenu);
+    ui->showMenu->addMenu(bookMarkMenu);
+    QAction* bookMarkAction = new QAction(this);
+    bookMarkAction->setText("添加书签");
+    bookMarkAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F2));
+    bookMarkMenu->addAction(bookMarkAction);
+    connect(bookMarkAction,&QAction::triggered, this,&MainWindow::addBookmark);
+
+    bookMarkAction = new QAction(this);
+    bookMarkAction->setText("查看所有书签");
+    bookMarkMenu->addAction(bookMarkAction);
+    connect(bookMarkAction, &QAction::triggered, this, &MainWindow::showBookmarkDialog);
 }
 
 MainWindow::~MainWindow()
@@ -560,6 +576,27 @@ void MainWindow::updateActions()
 
 }
 
+void MainWindow::addBookmark()
+{
+    CodeEditor *editor = currentCodeEdit();
+    if (editor) {
+        int lineNumber = editor->textCursor().blockNumber();
+        editor->toggleBookmark(lineNumber);
+    }
+}
+
+void MainWindow::showBookmarkDialog()
+{
+    CodeEditor *editor = currentCodeEdit(); // 获取当前打开的 CodeEdit 对象
+    if (!editor) return;
+    BookmarkDialog dialog(this);
+    dialog.setEditor(editor); // 设置当前文件的编辑器
+    dialog.exec();            // 模态弹出窗口
+}
+
+
+
+
 void MainWindow::adjustForCurrentFile(const QString &filePath)
 {
     currentFilePath = filePath;
@@ -601,7 +638,7 @@ void MainWindow::updateRecentActionList()
     if(itEnd>0){
         recentFileActionList.at(maxFileNr)->setText("清除历史记录");
         recentFileActionList.at(maxFileNr)->setVisible(true);
-        qDebug()<<recentFileActionList.at(maxFileNr);
+        // qDebug()<<recentFileActionList.at(maxFileNr);
     }
 
 }

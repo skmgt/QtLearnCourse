@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     aboutdialog.cpp \
+    bookmarkdialog.cpp \
     codeeditor.cpp \
     highlighter.cpp \
     main.cpp \
@@ -19,6 +20,7 @@ SOURCES += \
 
 HEADERS += \
     aboutdialog.h \
+    bookmarkdialog.h \
     codeeditor.h \
     highlighter.h \
     mainwindow.h \

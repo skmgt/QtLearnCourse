@@ -31,6 +31,45 @@ int CodeEditor::lineNumberAreaWidth()
     return space;
 }
 
+void CodeEditor::addBookmark(int lineNumber, const QString &description)
+{
+    bookmarks[lineNumber] = description.isEmpty() ? QString("Line %1").arg(lineNumber) : description;
+    emit bookmarksUpdated(); // 通知书签更新
+    viewport()->update();    // 刷新视图
+}
+
+void CodeEditor::removeBookmark(int lineNumber)
+{
+    if (bookmarks.contains(lineNumber)) {
+        bookmarks.remove(lineNumber);
+        emit bookmarksUpdated(); // 通知书签更新
+        viewport()->update();    // 刷新视图
+    }
+}
+
+void CodeEditor::toggleBookmark(int lineNumber)
+{
+    if (bookmarks.contains(lineNumber)) {
+        removeBookmark(lineNumber);
+    } else {
+        addBookmark(lineNumber);
+    }
+}
+
+QMap<int, QString> CodeEditor::getBookmarks() const
+{
+    return bookmarks;
+}
+
+void CodeEditor::clearBookmarks()
+{
+    bookmarks.clear();
+    emit bookmarksUpdated();
+    viewport()->update();
+}
+
+
+
 void CodeEditor::updateLineNumberAreaWidth(int /* newBlockCount */)
 {
     setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);
@@ -78,12 +117,12 @@ void CodeEditor::mouseReleaseEvent(QMouseEvent *event)
     if (event->button() == Qt::LeftButton) {
         QTextCursor cursor = cursorForPosition(event->pos());
         QString clickedText = cursor.selectedText();
-        qDebug()<<clickedText;
+        // qDebug()<<clickedText;
         // 如果没有选中文本，就获取光标下的文本
         if (clickedText.isEmpty()) {
             clickedText = cursor.block().text();
         }
-        qDebug()<<clickedText;
+        // qDebug()<<clickedText;
         // 如果文本包含链接，就打开它
         if (isValidLink(clickedText)) {
             QUrl url(clickedText);
@@ -97,6 +136,36 @@ void CodeEditor::mouseReleaseEvent(QMouseEvent *event)
     // 继续处理其他鼠标事件
     QPlainTextEdit::mouseReleaseEvent(event);
 }
+
+void CodeEditor::paintEvent(QPaintEvent *event)
+{
+    QPlainTextEdit::paintEvent(event);
+
+    // 绘制书签符号
+    QPainter painter(viewport());
+    QFontMetrics metrics(font());
+    int lineHeight = metrics.height();
+
+    for (auto it = bookmarks.begin(); it != bookmarks.end(); ++it) {
+        int lineNumber = it.key();
+        QTextBlock block = document()->findBlockByLineNumber(lineNumber);
+
+        if (!block.isValid() || !block.isVisible())
+            continue;
+
+        // 计算书签图标的绘制位置
+        QRect rect = blockBoundingGeometry(block).translated(contentOffset()).toRect();
+        int y = rect.top();
+        int x = -10; // 绘制在行号区域
+
+        // 绘制圆形书签图标
+        painter.setBrush(Qt::red);
+        painter.setPen(Qt::NoPen);
+        painter.drawEllipse(QPoint(x + 10, y + lineHeight / 2), 5, 5);
+    }
+}
+
+
 
 void CodeEditor::highlightCurrentLine()
 {

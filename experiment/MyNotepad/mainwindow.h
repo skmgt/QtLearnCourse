@@ -8,6 +8,7 @@
 #include "codeeditor.h"
 #include "highlighter.h"
 #include <QSettings>
+#include <QListWidget>
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -83,6 +84,9 @@ private slots:
     void clearHistory();
     void updateActions();  // 更新 QAction 的状态
 
+    void addBookmark();        // 添加书签
+    void showBookmarkDialog(); // 显示书签管理窗口
+
 private:
     Ui::MainWindow *ui;
     QString currentFilePath;
@@ -94,12 +98,12 @@ private:
     highlighter* highl; // 语法高亮对象
     bool textChanged;
 
-    QAction* openAction;
+
     QList<QAction*> recentFileActionList;
     const int maxFileNr=10;
     QMenu* recentFilesMenu;
-
-
+    QMenu* bookMarkMenu;
+    QListWidget *bookmarkList;
     void adjustForCurrentFile(const QString& filePath);
     void updateRecentActionList();
     void loadFile(const QString& fileName);
