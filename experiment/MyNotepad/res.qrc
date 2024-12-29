@@ -24,5 +24,8 @@
         <file>img/logo.png</file>
         <file>img/autoSave.png</file>
         <file>img/recentFiles.png</file>
+        <file>light.qss</file>
+        <file>dark.qss</file>
+        <file>img/theme.png</file>
     </qresource>
 </RCC>

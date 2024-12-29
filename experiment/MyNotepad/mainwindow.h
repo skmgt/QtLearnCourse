@@ -101,9 +101,9 @@ private:
     QLabel statusLabel;
     QTimer* autoSaveTimer;
     QString filePath;
-    highlighter* highl; // 语法高亮对象
+    Highlighter* highl; // 语法高亮对象
     bool textChanged;
-
+    bool theme = true;
 
     QList<QAction*> recentFileActionList;
     const int maxFileNr=10;
@@ -117,7 +117,7 @@ private:
 
     bool userEditConfirmed();
     void setupEditor();
-
+    void setTheme();
     CodeEditor *currentCodeEdit();  // 返回当前选项卡中的 CodeEdit
 
 

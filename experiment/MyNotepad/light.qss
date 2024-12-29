@@ -1,0 +1,19 @@
+QWidget {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+QPushButton {
+    background-color: #f0f0f0;
+    border: 1px solid #cccccc;
+}
+
+QPushButton:hover {
+    background-color: #e0e0e0;
+}
+
+Codeeditor {
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    color: #000000;
+}

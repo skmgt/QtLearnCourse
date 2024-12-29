@@ -99,7 +99,6 @@
     <addaction name="actionEditColor"/>
     <addaction name="actionFontBackgroundColor"/>
     <addaction name="actionTheme"/>
-    <addaction name="actionLanguage"/>
    </widget>
    <widget class="QMenu" name="showMenu">
     <property name="title">
@@ -539,16 +538,12 @@
    </property>
   </action>
   <action name="actionTheme">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/img/theme.png</normaloff>:/img/theme.png</iconset>
+   </property>
    <property name="text">
     <string>主题切换</string>
-   </property>
-   <property name="menuRole">
-    <enum>QAction::MenuRole::NoRole</enum>
-   </property>
-  </action>
-  <action name="actionLanguage">
-   <property name="text">
-    <string>语言设置</string>
    </property>
    <property name="menuRole">
     <enum>QAction::MenuRole::NoRole</enum>

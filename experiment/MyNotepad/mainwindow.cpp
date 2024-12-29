@@ -126,6 +126,11 @@ MainWindow::MainWindow(QWidget *parent)
     QAction *favoritesAction = new QAction("收藏夹管理", this);
     connect(favoritesAction, &QAction::triggered, this, &MainWindow::showFavoritesDialog);
     ui->showMenu->addAction(favoritesAction);
+
+    //高亮与主题
+    setupEditor();
+    connect(ui->actionTheme,&QAction::triggered,this,&MainWindow::setTheme);
+
 }
 
 MainWindow::~MainWindow()
@@ -220,6 +225,7 @@ void MainWindow::on_actionOpen_triggered()
     this->setWindowTitle(QFileInfo(filename).absoluteFilePath());
     adjustForCurrentFile(filePath);
 
+    setupEditor();
     textChanged = false;
 }
 
@@ -302,20 +308,20 @@ void MainWindow::on_textEdit_textChanged()
     int index = tabWidget->currentIndex();
     if (index == -1) return;  // 如果没有 tab 选中，则返回
     // qDebug()<<index;
-    // 获取当前 tab 页对应的 CodeEdit 控件
-    // CodeEditor *codeEdit = qobject_cast<CodeEditor*>(tabWidget->widget(index));
-    // if (codeEdit) {
-    //     // 获取当前 tab 页的标题
-    //     QString currentTabTitle = tabWidget->tabText(index);
-    //     // qDebug()<<currentTabTitle;
-    //     // 如果标题不包含 "*"，则加上 "*"
-    //     if (!currentTabTitle.startsWith("*")) {
-    //         tabWidget->setTabText(index, "*" + currentTabTitle);
-    //     }
-    //     statusLabel.setText("length: " + QString::number(codeEdit->toPlainText().length())
-    //                         + "     lines: " +
-    //                         QString::number(codeEdit->document()->lineCount()));
-    // }
+    //获取当前 tab 页对应的 CodeEdit 控件
+    CodeEditor *codeEdit = currentCodeEdit();
+    if (codeEdit) {
+        // 获取当前 tab 页的标题
+        QString currentTabTitle = tabWidget->tabText(index);
+        // // qDebug()<<currentTabTitle;
+        // // 如果标题不包含 "*"，则加上 "*"
+        // if (!currentTabTitle.startsWith("*")) {
+        //     tabWidget->setTabText(index, "*" + currentTabTitle);
+        // }
+        statusLabel.setText("length: " + QString::number(codeEdit->toPlainText().length())
+                            + "     lines: " +
+                            QString::number(codeEdit->document()->lineCount()));
+    }
 }
 
 bool MainWindow::userEditConfirmed()
@@ -342,6 +348,43 @@ bool MainWindow::userEditConfirmed()
     // }
 
     return true;
+}
+
+void MainWindow::setupEditor()
+{
+    QFont font;
+    font.setFamily("Courier");
+    font.setFixedPitch(true);
+    font.setPointSize(12);
+
+    CodeEditor* editor = currentCodeEdit();
+    editor->setFont(font);
+
+    highl = new Highlighter(editor->document());
+
+    QFile file("mainwindow.h");
+    if (file.open(QFile::ReadOnly | QFile::Text))
+        editor->setPlainText(file.readAll());
+}
+
+void MainWindow::setTheme()
+{
+    QFile file;
+    if(!theme){
+        file.setFileName(":/light.qss");
+        theme=true;
+    }else{
+        file.setFileName(":/dark.qss");
+        theme=false;
+    }
+
+
+    if (file.open(QFile::ReadOnly)) {
+        QTextStream stream(&file);
+        QString style = stream.readAll();
+        qDebug()<<style;
+        qApp->setStyleSheet(style);
+    }
 }
 
 CodeEditor *MainWindow::currentCodeEdit()
@@ -616,27 +659,8 @@ void MainWindow::showFavoritesDialog()
 
 void MainWindow::openFile(const QString &filePath)
 {
-
-
-    QFile file(filePath);
-
-    if(!file.open(QFile::ReadOnly | QFile::Text)){
-        QMessageBox::warning(this,"..","打开文件失败");
-        return;
-    }
-
-    QTextStream in(&file);
-    QString text = in.readAll();
-    CodeEditor *textEdit = new CodeEditor(this);
-    textEdit->setPlainText(text);
-    tabWidget->addTab(textEdit,QFileInfo(filePath).fileName());
-    tabWidget->setCurrentWidget(textEdit);
-    connect(textEdit, &CodeEditor::textChanged, this, &MainWindow::on_textEdit_textChanged);
-    this->setWindowTitle(QFileInfo(filePath).absoluteFilePath());
-    adjustForCurrentFile(filePath);
-
+    loadFile(filePath);
 }
-
 
 
 
