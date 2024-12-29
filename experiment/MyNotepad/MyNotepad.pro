@@ -12,6 +12,8 @@ SOURCES += \
     aboutdialog.cpp \
     bookmarkdialog.cpp \
     codeeditor.cpp \
+    favoritesdialog.cpp \
+    favoritesmanager.cpp \
     highlighter.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -22,6 +24,8 @@ HEADERS += \
     aboutdialog.h \
     bookmarkdialog.h \
     codeeditor.h \
+    favoritesdialog.h \
+    favoritesmanager.h \
     highlighter.h \
     mainwindow.h \
     replacedialog.h \

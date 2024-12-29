@@ -12,7 +12,7 @@
 #include <QGuiApplication>
 #include "BookmarkDialog.h"
 #include <QMimeData>
-
+#include "favoritesdialog.h"
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -117,6 +117,15 @@ MainWindow::MainWindow(QWidget *parent)
     bookMarkAction->setText("查看所有书签");
     bookMarkMenu->addAction(bookMarkAction);
     connect(bookMarkAction, &QAction::triggered, this, &MainWindow::showBookmarkDialog);
+
+
+    // 收藏夹
+
+
+    favoritesManager = new FavoritesManager(this);
+    QAction *favoritesAction = new QAction("收藏夹管理", this);
+    connect(favoritesAction, &QAction::triggered, this, &MainWindow::showFavoritesDialog);
+    ui->showMenu->addAction(favoritesAction);
 }
 
 MainWindow::~MainWindow()
@@ -592,6 +601,40 @@ void MainWindow::showBookmarkDialog()
     BookmarkDialog dialog(this);
     dialog.setEditor(editor); // 设置当前文件的编辑器
     dialog.exec();            // 模态弹出窗口
+}
+
+
+
+void MainWindow::showFavoritesDialog()
+{
+    FavoritesDialog dialog(favoritesManager, this);
+    // 连接收藏夹弹窗的打开文件信号到主窗口的文件打开槽
+    connect(&dialog, &FavoritesDialog::openFileRequested, this, &MainWindow::openFile);
+
+    dialog.exec();
+}
+
+void MainWindow::openFile(const QString &filePath)
+{
+
+
+    QFile file(filePath);
+
+    if(!file.open(QFile::ReadOnly | QFile::Text)){
+        QMessageBox::warning(this,"..","打开文件失败");
+        return;
+    }
+
+    QTextStream in(&file);
+    QString text = in.readAll();
+    CodeEditor *textEdit = new CodeEditor(this);
+    textEdit->setPlainText(text);
+    tabWidget->addTab(textEdit,QFileInfo(filePath).fileName());
+    tabWidget->setCurrentWidget(textEdit);
+    connect(textEdit, &CodeEditor::textChanged, this, &MainWindow::on_textEdit_textChanged);
+    this->setWindowTitle(QFileInfo(filePath).absoluteFilePath());
+    adjustForCurrentFile(filePath);
+
 }
 
 

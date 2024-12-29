@@ -9,6 +9,7 @@
 #include "highlighter.h"
 #include <QSettings>
 #include <QListWidget>
+#include "favoritesmanager.h"
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -87,6 +88,11 @@ private slots:
     void addBookmark();        // 添加书签
     void showBookmarkDialog(); // 显示书签管理窗口
 
+
+    void showFavoritesDialog(); // 显示收藏夹窗口
+    void openFile(const QString &filePath); // 打开文件的槽函数
+
+
 private:
     Ui::MainWindow *ui;
     QString currentFilePath;
@@ -104,6 +110,7 @@ private:
     QMenu* recentFilesMenu;
     QMenu* bookMarkMenu;
     QListWidget *bookmarkList;
+    FavoritesManager *favoritesManager; // 收藏夹管理
     void adjustForCurrentFile(const QString& filePath);
     void updateRecentActionList();
     void loadFile(const QString& fileName);
