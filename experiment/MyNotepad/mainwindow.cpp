@@ -194,6 +194,7 @@ void MainWindow::on_actionNew_triggered()
     tabWidget->setCurrentWidget(textEdit);
     connect(textEdit, &CodeEditor::textChanged, this, &MainWindow::on_textEdit_textChanged);
     textChanged = false;
+    setupEditor();
 }
 
 

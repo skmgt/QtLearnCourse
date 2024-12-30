@@ -125,7 +125,15 @@ void CodeEditor::mouseReleaseEvent(QMouseEvent *event)
         // qDebug()<<clickedText;
         // 如果文本包含链接，就打开它
         if (isValidLink(clickedText)) {
+            // 匹配URL的正则表达式
+            QRegularExpression urlRegex(R"((http|https|ftp|mailto)://[^\s]+)");
+            QRegularExpressionMatch match = urlRegex.match(clickedText);
+            if (match.hasMatch()) {
+                clickedText = match.captured(0);
+            }
+
             QUrl url(clickedText);
+            qDebug()<<clickedText;
             if (url.isValid()) {
                 // 打开链接
                 QDesktopServices::openUrl(url);
